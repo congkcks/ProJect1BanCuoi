@@ -28,6 +28,9 @@ import ReadingDocDetailPage from "./pages/ReadingDocDetailPage";
 import ListeningItemPage from "./pages/ListeningItemPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import ProfilePage from "./pages/ProfilePage";
+import RequireAuth from "@/components/RequireAuth";
+import { AuthProvider } from "@/context/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -36,8 +39,9 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/study-plan" element={<StudyPlan />} />
           <Route path="/assessment" element={<Assessment />} />
@@ -59,6 +63,14 @@ const App = () => (
           {/* Auth routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/profile"
+            element={(
+              <RequireAuth>
+                <ProfilePage />
+              </RequireAuth>
+            )}
+          />
           {/* New learning flow */}
           <Route path="/day1-intro" element={<Day1IntroPage />} />
           <Route path="/lesson/overview/:maBai" element={<LessonOverviewPage />} />
@@ -68,6 +80,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+    </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

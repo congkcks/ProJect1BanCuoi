@@ -515,6 +515,82 @@ export class ApiService {
     return this.requestWithFallback<any>(candidates, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': '*/*' }, body });
   }
 
+  async updateProfile(profileData: Record<string, unknown>): Promise<any> {
+    const body = JSON.stringify(profileData);
+    const headers = { 'Content-Type': 'application/json', 'Accept': '*/*' };
+    const endpointGroups = [
+      {
+        method: 'PUT',
+        endpoints: [
+          '/NguoiDung/cap-nhat',
+          '/NguoiDung/cap-nhat-ho-so',
+          '/NguoiDung/update',
+          '/NguoiDung/profile',
+          '/TaiKhoan/cap-nhat',
+          '/TaiKhoan/profile',
+          '/Auth/cap-nhat',
+          '/auth/profile',
+          '/users/profile',
+          '/users/me',
+          '/Users/profile',
+          '/Account/profile',
+        ],
+      },
+      {
+        method: 'PATCH',
+        endpoints: [
+          '/NguoiDung/cap-nhat',
+          '/NguoiDung/cap-nhat-ho-so',
+          '/NguoiDung/update',
+          '/NguoiDung/profile',
+          '/TaiKhoan/cap-nhat',
+          '/TaiKhoan/profile',
+          '/Auth/cap-nhat',
+          '/auth/profile',
+          '/users/profile',
+          '/users/me',
+          '/Users/profile',
+          '/Account/profile',
+        ],
+      },
+      {
+        method: 'POST',
+        endpoints: [
+          '/NguoiDung/cap-nhat',
+          '/NguoiDung/cap-nhat-ho-so',
+          '/NguoiDung/update',
+          '/NguoiDung/profile',
+          '/TaiKhoan/cap-nhat',
+          '/TaiKhoan/profile',
+          '/Auth/cap-nhat',
+          '/auth/profile',
+          '/users/profile',
+          '/users/me',
+          '/Users/profile',
+          '/Account/profile',
+        ],
+      },
+    ];
+
+    let lastError: unknown = null;
+    for (const group of endpointGroups) {
+      try {
+        return await this.requestWithFallback<any>(group.endpoints, {
+          method: group.method,
+          headers,
+          body,
+        });
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    if (lastError instanceof Error) {
+      throw lastError;
+    }
+    throw new Error('Failed to update profile');
+  }
+
   // Utility methods
   logout(): void {
     this.token = null;

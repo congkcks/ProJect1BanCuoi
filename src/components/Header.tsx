@@ -1,10 +1,65 @@
-import { Button } from "@/components/ui/button";
+import { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+
+import defaultAvatar from "@/assets/default-avatar.svg";
+import { useAuth } from "@/context/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
+
+  const navLinks = useMemo(
+    () => [
+      { label: "Trang chủ", to: "/" },
+      { label: "Đánh giá trình độ", to: "/assessment" },
+      { label: "Lộ trình học", to: "/study-plan" },
+      { label: "Dashboard", to: "/dashboard" },
+      { label: "Tất cả trang", to: "/all-interfaces" },
+    ],
+    []
+  );
+
+  const fullName =
+    (user?.hoTen as string) ||
+    (user?.fullName as string) ||
+    (user?.name as string) ||
+    "Người dùng";
+  const email = (user?.email as string) || "";
+  const avatarUrl =
+    (user?.anhDaiDien as string) ||
+    (user?.avatarUrl as string) ||
+    (user?.avatar as string) ||
+    "";
+
+  const initials = useMemo(() => {
+    const segments = fullName.trim().split(/\s+/).filter(Boolean);
+    if (!segments.length) return "ND";
+    if (segments.length === 1) return segments[0].slice(0, 2).toUpperCase();
+    return `${segments[0][0]}${segments[segments.length - 1][0]}`.toUpperCase();
+  }, [fullName]);
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    setIsMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsMenuOpen(false);
+    navigate("/");
+  };
 
   return (
     <header className="bg-card/80 backdrop-blur-sm border-b border-border sticky top-0 z-50">
@@ -12,51 +67,28 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">T</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-hero">
+              <span className="text-lg font-bold text-white">T</span>
             </div>
             <span className="text-xl font-bold text-toeic-navy">TOEIC ACE PATH</span>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="/" className="text-foreground hover:text-toeic-blue transition-colors">Trang chủ</a>
-            <a href="/assessment" className="text-foreground hover:text-toeic-blue transition-colors">Đánh giá trình độ</a>
-            <a href="/study-plan" className="text-foreground hover:text-toeic-blue transition-colors">Lộ trình học</a>
-            <a href="/dashboard" className="text-foreground hover:text-toeic-blue transition-colors">Dashboard</a>
-            <a href="/all-interfaces" className="text-foreground hover:text-toeic-blue transition-colors">Tất cả trang</a>
+          <nav className="hidden items-center space-x-8 md:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="text-foreground transition-colors hover:text-toeic-blue"
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
-          {/* Desktop Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" asChild>
-              <Link to="/login">Đăng nhập</Link>
-            </Button>
-            <Button variant="hero" asChild>
-              <Link to="/register">Đăng ký miễn phí</Link>
-            </Button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 space-y-4">
-            <nav className="flex flex-col space-y-4">
-              <a href="/" className="text-foreground hover:text-toeic-blue transition-colors">Trang chủ</a>
-              <a href="/assessment" className="text-foreground hover:text-toeic-blue transition-colors">Đánh giá trình độ</a>
-              <a href="/study-plan" className="text-foreground hover:text-toeic-blue transition-colors">Lộ trình học</a>
-              <a href="/dashboard" className="text-foreground hover:text-toeic-blue transition-colors">Dashboard</a>
-              <a href="/all-interfaces" className="text-foreground hover:text-toeic-blue transition-colors">Tất cả trang</a>
-            </nav>
-            <div className="flex flex-col space-y-2 pt-4">
+          {/* Desktop Auth Actions */}
+          {!isAuthenticated ? (
+            <div className="hidden items-center space-x-4 md:flex">
               <Button variant="ghost" asChild>
                 <Link to="/login">Đăng nhập</Link>
               </Button>
@@ -64,6 +96,105 @@ const Header = () => {
                 <Link to="/register">Đăng ký miễn phí</Link>
               </Button>
             </div>
+          ) : (
+            <div className="hidden items-center md:flex">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2 rounded-full border border-border bg-background p-1.5 transition hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={avatarUrl || defaultAvatar} alt={fullName} />
+                      <AvatarFallback className="text-sm font-semibold">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col gap-1">
+                      <span className="font-medium">{fullName}</span>
+                      {email && (
+                        <span className="text-xs text-muted-foreground">{email}</span>
+                      )}
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onSelect={(event) => {
+                      event.preventDefault();
+                      handleNavigate("/profile");
+                    }}
+                  >
+                    Thông tin cá nhân
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={(event) => {
+                      event.preventDefault();
+                      handleLogout();
+                    }}
+                  >
+                    Đăng xuất
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden"
+            onClick={() => setIsMenuOpen((prev) => !prev)}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="mt-4 space-y-4 pb-4 md:hidden">
+            <nav className="flex flex-col space-y-4">
+              {navLinks.map((link) => (
+                <button
+                  key={link.to}
+                  type="button"
+                  onClick={() => handleNavigate(link.to)}
+                  className="text-left text-foreground transition-colors hover:text-toeic-blue"
+                >
+                  {link.label}
+                </button>
+              ))}
+            </nav>
+            {!isAuthenticated ? (
+              <div className="flex flex-col space-y-2 pt-4">
+                <Button variant="ghost" asChild>
+                  <Link to="/login">Đăng nhập</Link>
+                </Button>
+                <Button variant="hero" asChild>
+                  <Link to="/register">Đăng ký miễn phí</Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col space-y-3 pt-4">
+                <div className="flex items-center gap-3 rounded-lg border border-border bg-background p-3">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={avatarUrl || defaultAvatar} alt={fullName} />
+                    <AvatarFallback className="font-semibold">{initials}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{fullName}</span>
+                    {email && (
+                      <span className="text-sm text-muted-foreground">{email}</span>
+                    )}
+                  </div>
+                </div>
+                <Button variant="ghost" onClick={() => handleNavigate("/profile")}>
+                  Thông tin cá nhân
+                </Button>
+                <Button variant="outline" onClick={handleLogout}>
+                  Đăng xuất
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>
