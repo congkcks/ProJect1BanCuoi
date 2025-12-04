@@ -1,15 +1,17 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSentences } from "@/hooks/useSentences";
 import { useLessons } from "@/hooks/useLessons";
 import { useTopics } from "@/hooks/useTopics";
 import { YouTubePlayer } from "@/components/YouTubePlayer";
 import { DictationPanel } from "@/components/DictationPanel";
+import { ShadowingPanel } from "@/components/ShadowingPanel";
 import { TranscriptPanel } from "@/components/TranscriptPanel";
 import { getYoutubeVideoId, formatDuration } from "@/services/api";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronRight, Clock, Play, RotateCcw, Headphones } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronRight, Clock, Play, RotateCcw, Headphones, Mic, PenLine } from "lucide-react";
 import { Sentence } from "@/types/api";
 
 const LessonDetail = () => {
@@ -140,15 +142,38 @@ const LessonDetail = () => {
               <h3 className="font-semibold text-card-foreground mt-4">{currentLesson.title}</h3>
             </div>
 
-            {/* Dictation Panel */}
+            {/* Practice Panels - Tabs for Shadowing and Dictation */}
             {sentences && sentences.length > 0 && (
-              <DictationPanel
-                sentences={sentences}
-                currentIndex={currentSentenceIndex}
-                onIndexChange={setCurrentSentenceIndex}
-                onPlaySentence={handlePlaySentence}
-                level={currentLesson.level}
-              />
+              <Tabs defaultValue="shadowing" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-4">
+                  <TabsTrigger value="shadowing" className="gap-2">
+                    <Mic className="h-4 w-4" />
+                    Shadowing
+                  </TabsTrigger>
+                  <TabsTrigger value="dictation" className="gap-2">
+                    <PenLine className="h-4 w-4" />
+                    Chép chính tả
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="shadowing">
+                  <ShadowingPanel
+                    sentences={sentences}
+                    currentIndex={currentSentenceIndex}
+                    onIndexChange={setCurrentSentenceIndex}
+                    onPlaySentence={handlePlaySentence}
+                    level={currentLesson.level}
+                  />
+                </TabsContent>
+                <TabsContent value="dictation">
+                  <DictationPanel
+                    sentences={sentences}
+                    currentIndex={currentSentenceIndex}
+                    onIndexChange={setCurrentSentenceIndex}
+                    onPlaySentence={handlePlaySentence}
+                    level={currentLesson.level}
+                  />
+                </TabsContent>
+              </Tabs>
             )}
           </div>
 
