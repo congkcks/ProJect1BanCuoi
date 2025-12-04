@@ -11,6 +11,7 @@ interface DictationPanelProps {
   onIndexChange: (index: number) => void;
   onPlaySentence: (sentence: Sentence) => void;
   level: string;
+  onComplete?: (index: number) => void;
 }
 
 export const DictationPanel = ({
@@ -19,6 +20,7 @@ export const DictationPanel = ({
   onIndexChange,
   onPlaySentence,
   level,
+  onComplete,
 }: DictationPanelProps) => {
   const [userInput, setUserInput] = useState("");
   const [showAnswer, setShowAnswer] = useState(false);
@@ -63,6 +65,7 @@ export const DictationPanel = ({
   const handleSubmit = () => {
     setIsSubmitted(true);
     setShowAnswer(true);
+    onComplete?.(currentIndex);
   };
 
   const handleNext = () => {

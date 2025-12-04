@@ -188,6 +188,11 @@ const LessonDetail = () => {
                         onIndexChange={setCurrentSentenceIndex}
                         onPlaySentence={handlePlaySentence}
                         level={currentLesson.level}
+                        onComplete={(index) => {
+                          if (!completedIndexes.includes(index)) {
+                            setCompletedIndexes([...completedIndexes, index]);
+                          }
+                        }}
                       />
                     )}
                   </div>
