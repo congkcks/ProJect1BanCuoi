@@ -1,19 +1,18 @@
 import { useState } from "react";
-import { TopicCard } from "@/components/TopicCard";
+import { Link } from "react-router-dom";
+import { useTopics } from "@/hooks/useTopics";
 import { CategoryTag } from "@/components/CategoryTag";
-import { topics, categories } from "@/data/topics";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Headphones, BookOpen, Sparkles } from "lucide-react";
 
 const Index = () => {
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeCategory, setActiveCategory] = useState<number | null>(null);
+  const { data: topics, isLoading } = useTopics();
 
   const filteredTopics =
-    activeCategory === "all"
+    activeCategory === null
       ? topics
-      : topics.filter((topic) => topic.category === activeCategory);
-
-  const beginnerTopics = filteredTopics.filter((t) => ["A1", "A2"].includes(t.level));
-  const advancedTopics = filteredTopics.filter((t) => ["B1", "B2", "C1", "C2"].includes(t.level));
+      : topics?.filter((topic) => topic.id === activeCategory);
 
   return (
     <div className="min-h-screen bg-background">
@@ -85,76 +84,52 @@ const Index = () => {
       {/* Topics Section */}
       <section id="topics" className="py-12">
         <div className="container px-4">
-          {/* Level Sections */}
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            <div className="p-6 rounded-xl bg-gradient-to-br from-level-a2/10 to-background border border-border">
-              <h2 className="text-xl font-bold text-foreground mb-2">
-                Dành cho người mới bắt đầu
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Tập trung vào phát âm cơ bản và luyện nghe từng từ, câu đơn giản
-              </p>
-            </div>
-            <div className="p-6 rounded-xl bg-gradient-to-br from-level-b2/10 to-background border border-border">
-              <h2 className="text-xl font-bold text-foreground mb-2">
-                Dành cho người đã có kinh nghiệm
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Nâng cao kỹ năng với tốc độ nói thực tế và các chủ đề phức tạp hơn
-              </p>
-            </div>
-          </div>
-
           {/* Categories */}
           <div className="mb-8">
             <h3 className="text-sm font-semibold text-foreground mb-4">Tất cả chủ đề</h3>
             <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
+              <CategoryTag
+                label="Tất cả"
+                isActive={activeCategory === null}
+                onClick={() => setActiveCategory(null)}
+              />
+              {topics?.map((topic) => (
                 <CategoryTag
-                  key={category.id}
-                  label={category.label}
-                  isActive={activeCategory === category.id}
-                  onClick={() => setActiveCategory(category.id)}
+                  key={topic.id}
+                  label={topic.name}
+                  isActive={activeCategory === topic.id}
+                  onClick={() => setActiveCategory(topic.id)}
                 />
               ))}
             </div>
           </div>
 
-          {/* Beginner Topics */}
-          {beginnerTopics.length > 0 && (
-            <div className="mb-12">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold text-foreground">
-                  Dành cho người mới bắt đầu
-                </h3>
-                <a href="#" className="text-sm font-medium text-primary hover:underline">
-                  Xem tất cả →
-                </a>
-              </div>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {beginnerTopics.map((topic) => (
-                  <TopicCard key={topic.id} {...topic} />
-                ))}
-              </div>
+          {/* Topics Grid */}
+          {isLoading ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className="h-48 rounded-xl" />
+              ))}
             </div>
-          )}
-
-          {/* Advanced Topics */}
-          {advancedTopics.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold text-foreground">
-                  Dành cho người đã có kinh nghiệm
-                </h3>
-                <a href="#" className="text-sm font-medium text-primary hover:underline">
-                  Xem tất cả →
-                </a>
-              </div>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {advancedTopics.map((topic) => (
-                  <TopicCard key={topic.id} {...topic} />
-                ))}
-              </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredTopics?.map((topic) => (
+                <Link
+                  key={topic.id}
+                  to={`/topic/${topic.id}`}
+                  className="group p-6 rounded-xl border border-border bg-card hover:shadow-lg transition-all hover:border-primary/50"
+                >
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-level-b2/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Headphones className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="font-semibold text-card-foreground mb-2 group-hover:text-primary transition-colors">
+                    {topic.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {topic.description}
+                  </p>
+                </Link>
+              ))}
             </div>
           )}
         </div>
