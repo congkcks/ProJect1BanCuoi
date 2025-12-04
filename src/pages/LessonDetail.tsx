@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSentences } from "@/hooks/useSentences";
 import { useLessons } from "@/hooks/useLessons";
@@ -9,15 +9,14 @@ import { TranscriptPanel } from "@/components/TranscriptPanel";
 import { getYoutubeVideoId, formatDuration } from "@/services/api";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronRight, Clock, Play, RotateCcw, Eye, EyeOff, Headphones } from "lucide-react";
+import { ChevronRight, Clock, Play, RotateCcw, Headphones } from "lucide-react";
 import { Sentence } from "@/types/api";
 
 const LessonDetail = () => {
   const { topicId, lessonId } = useParams();
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [completedIndexes, setCompletedIndexes] = useState<number[]>([]);
-  const [playStartTime, setPlayStartTime] = useState<number | undefined>();
-  const playerRef = useRef<any>(null);
+  const [playTrigger, setPlayTrigger] = useState<{ start: number; end: number } | null>(null);
 
   const { data: topics } = useTopics();
   const { data: lessons } = useLessons(topicId ? parseInt(topicId) : null);
@@ -27,27 +26,24 @@ const LessonDetail = () => {
 
   const currentTopic = topics?.find((t) => t.id === parseInt(topicId || "0"));
   const currentLesson = lessons?.find((l) => l.id === parseInt(lessonId || "0"));
-  const videoId = currentLesson?.videoUrl
-    ? getYoutubeVideoId(currentLesson.videoUrl)
-    : null;
+  const videoId = currentLesson?.videoUrl ? getYoutubeVideoId(currentLesson.videoUrl) : null;
 
   const handlePlaySentence = (sentence: Sentence) => {
-    setPlayStartTime(sentence.startTime);
+    setPlayTrigger({ start: sentence.startTime, end: sentence.endTime });
   };
 
   const handleTimeUpdate = (time: number) => {
     if (!sentences) return;
-    const current = sentences.findIndex(
-      (s) => time >= s.startTime && time < s.endTime
-    );
+    const current = sentences.findIndex((s) => time >= s.startTime && time < s.endTime);
     if (current !== -1 && current !== currentSentenceIndex) {
       setCurrentSentenceIndex(current);
     }
   };
 
-  const handleSentenceComplete = (index: number) => {
-    if (!completedIndexes.includes(index)) {
-      setCompletedIndexes([...completedIndexes, index]);
+  const handleSentenceClick = (index: number) => {
+    setCurrentSentenceIndex(index);
+    if (sentences?.[index]) {
+      handlePlaySentence(sentences[index]);
     }
   };
 
@@ -70,24 +66,29 @@ const LessonDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur">
+        <div className="container flex h-14 items-center px-4">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-level-b2 flex items-center justify-center">
+              <Headphones className="h-4 w-4 text-white" />
+            </div>
+            <span className="text-lg font-bold text-foreground">EnglishListen</span>
+          </Link>
+        </div>
+      </header>
+
       {/* Breadcrumb */}
       <div className="border-b border-border">
         <div className="container px-4 py-3">
           <div className="flex items-center gap-2 text-sm">
-            <Link to="/" className="text-muted-foreground hover:text-foreground">
-              Topics
-            </Link>
+            <Link to="/" className="text-muted-foreground hover:text-foreground">Topics</Link>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            <Link
-              to={`/topic/${topicId}`}
-              className="text-muted-foreground hover:text-foreground"
-            >
+            <Link to={`/topic/${topicId}`} className="text-muted-foreground hover:text-foreground">
               {currentTopic?.name}
             </Link>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            <span className="text-foreground font-medium truncate max-w-xs">
-              {currentLesson.title}
-            </span>
+            <span className="text-foreground font-medium truncate max-w-xs">{currentLesson.title}</span>
           </div>
         </div>
       </div>
@@ -110,7 +111,8 @@ const LessonDetail = () => {
                 <YouTubePlayer
                   videoId={videoId}
                   onTimeUpdate={handleTimeUpdate}
-                  startTime={playStartTime}
+                  startTime={playTrigger?.start}
+                  endTime={playTrigger?.end}
                 />
               )}
 
@@ -118,20 +120,24 @@ const LessonDetail = () => {
               <div className="mt-4">
                 <p className="text-sm text-muted-foreground mb-2">Điều khiển</p>
                 <div className="flex gap-2">
-                  <Button variant="default" className="flex-1">
-                    <Play className="h-4 w-4 mr-2" />
-                    Bắt đầu
+                  <Button 
+                    variant="default" 
+                    className="flex-1"
+                    onClick={() => sentences?.[currentSentenceIndex] && handlePlaySentence(sentences[currentSentenceIndex])}
+                  >
+                    <Play className="h-4 w-4 mr-2" />Phát câu hiện tại
                   </Button>
-                  <Button variant="secondary" className="flex-1">
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    Phát lại
+                  <Button 
+                    variant="secondary" 
+                    className="flex-1"
+                    onClick={() => sentences?.[currentSentenceIndex] && handlePlaySentence(sentences[currentSentenceIndex])}
+                  >
+                    <RotateCcw className="h-4 w-4 mr-2" />Phát lại
                   </Button>
                 </div>
               </div>
 
-              <h3 className="font-semibold text-card-foreground mt-4">
-                {currentLesson.title}
-              </h3>
+              <h3 className="font-semibold text-card-foreground mt-4">{currentLesson.title}</h3>
             </div>
 
             {/* Dictation Panel */}
@@ -154,12 +160,7 @@ const LessonDetail = () => {
               <TranscriptPanel
                 sentences={sentences}
                 currentIndex={currentSentenceIndex}
-                onSentenceClick={(index) => {
-                  setCurrentSentenceIndex(index);
-                  if (sentences[index]) {
-                    handlePlaySentence(sentences[index]);
-                  }
-                }}
+                onSentenceClick={handleSentenceClick}
                 completedIndexes={completedIndexes}
               />
             ) : (
