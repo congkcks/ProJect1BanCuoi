@@ -4,18 +4,14 @@ import { useTopics } from "@/hooks/useTopics";
 import { CategoryTag } from "@/components/CategoryTag";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Headphones, BookOpen, Sparkles } from "lucide-react";
-
 const Index = () => {
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
-  const { data: topics, isLoading } = useTopics();
-
-  const filteredTopics =
-    activeCategory === null
-      ? topics
-      : topics?.filter((topic) => topic.id === activeCategory);
-
-  return (
-    <div className="min-h-screen bg-background">
+  const {
+    data: topics,
+    isLoading
+  } = useTopics();
+  const filteredTopics = activeCategory === null ? topics : topics?.filter(topic => topic.id === activeCategory);
+  return <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between px-4">
@@ -23,7 +19,7 @@ const Index = () => {
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-level-b2 flex items-center justify-center">
               <Headphones className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-foreground">EnglishListen</span>
+            <span className="text-xl font-bold text-foreground">UTC-EngLish</span>
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <a href="#topics" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
@@ -88,37 +84,18 @@ const Index = () => {
           <div className="mb-8">
             <h3 className="text-sm font-semibold text-foreground mb-4">Tất cả chủ đề</h3>
             <div className="flex flex-wrap gap-2">
-              <CategoryTag
-                label="Tất cả"
-                isActive={activeCategory === null}
-                onClick={() => setActiveCategory(null)}
-              />
-              {topics?.map((topic) => (
-                <CategoryTag
-                  key={topic.id}
-                  label={topic.name}
-                  isActive={activeCategory === topic.id}
-                  onClick={() => setActiveCategory(topic.id)}
-                />
-              ))}
+              <CategoryTag label="Tất cả" isActive={activeCategory === null} onClick={() => setActiveCategory(null)} />
+              {topics?.map(topic => <CategoryTag key={topic.id} label={topic.name} isActive={activeCategory === topic.id} onClick={() => setActiveCategory(topic.id)} />)}
             </div>
           </div>
 
           {/* Topics Grid */}
-          {isLoading ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <Skeleton key={i} className="h-48 rounded-xl" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredTopics?.map((topic) => (
-                <Link
-                  key={topic.id}
-                  to={`/topic/${topic.id}`}
-                  className="group p-6 rounded-xl border border-border bg-card hover:shadow-lg transition-all hover:border-primary/50"
-                >
+          {isLoading ? <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {Array.from({
+            length: 8
+          }).map((_, i) => <Skeleton key={i} className="h-48 rounded-xl" />)}
+            </div> : <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredTopics?.map(topic => <Link key={topic.id} to={`/topic/${topic.id}`} className="group p-6 rounded-xl border border-border bg-card hover:shadow-lg transition-all hover:border-primary/50">
                   <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-level-b2/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Headphones className="h-6 w-6 text-primary" />
                   </div>
@@ -128,10 +105,8 @@ const Index = () => {
                   <p className="text-sm text-muted-foreground line-clamp-2">
                     {topic.description}
                   </p>
-                </Link>
-              ))}
-            </div>
-          )}
+                </Link>)}
+            </div>}
         </div>
       </section>
 
@@ -185,8 +160,6 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
