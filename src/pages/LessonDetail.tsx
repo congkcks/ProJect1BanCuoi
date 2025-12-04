@@ -7,11 +7,11 @@ import { YouTubePlayer } from "@/components/YouTubePlayer";
 import { DictationPanel } from "@/components/DictationPanel";
 import { ShadowingPanel } from "@/components/ShadowingPanel";
 import { TranscriptPanel } from "@/components/TranscriptPanel";
+import { PracticeModeSelector, PracticeMode } from "@/components/PracticeModeSelector";
 import { getYoutubeVideoId, formatDuration } from "@/services/api";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronRight, Clock, Play, RotateCcw, Headphones, Mic, PenLine } from "lucide-react";
+import { ChevronRight, Clock, Play, RotateCcw, Headphones, ArrowLeft, Mic, PenLine } from "lucide-react";
 import { Sentence } from "@/types/api";
 
 const LessonDetail = () => {
@@ -19,6 +19,7 @@ const LessonDetail = () => {
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [completedIndexes, setCompletedIndexes] = useState<number[]>([]);
   const [playTrigger, setPlayTrigger] = useState<{ start: number; end: number } | null>(null);
+  const [practiceMode, setPracticeMode] = useState<PracticeMode | null>(null);
 
   const { data: topics } = useTopics();
   const { data: lessons } = useLessons(topicId ? parseInt(topicId) : null);
@@ -142,38 +143,56 @@ const LessonDetail = () => {
               <h3 className="font-semibold text-card-foreground mt-4">{currentLesson.title}</h3>
             </div>
 
-            {/* Practice Panels - Tabs for Shadowing and Dictation */}
+            {/* Practice Mode Selection or Panel */}
             {sentences && sentences.length > 0 && (
-              <Tabs defaultValue="shadowing" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-4">
-                  <TabsTrigger value="shadowing" className="gap-2">
-                    <Mic className="h-4 w-4" />
-                    Shadowing
-                  </TabsTrigger>
-                  <TabsTrigger value="dictation" className="gap-2">
-                    <PenLine className="h-4 w-4" />
-                    Chép chính tả
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="shadowing">
-                  <ShadowingPanel
-                    sentences={sentences}
-                    currentIndex={currentSentenceIndex}
-                    onIndexChange={setCurrentSentenceIndex}
-                    onPlaySentence={handlePlaySentence}
-                    level={currentLesson.level}
-                  />
-                </TabsContent>
-                <TabsContent value="dictation">
-                  <DictationPanel
-                    sentences={sentences}
-                    currentIndex={currentSentenceIndex}
-                    onIndexChange={setCurrentSentenceIndex}
-                    onPlaySentence={handlePlaySentence}
-                    level={currentLesson.level}
-                  />
-                </TabsContent>
-              </Tabs>
+              <>
+                {!practiceMode ? (
+                  <PracticeModeSelector onSelect={setPracticeMode} />
+                ) : (
+                  <div className="space-y-4">
+                    {/* Mode indicator and change button */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {practiceMode === "shadowing" ? (
+                          <Mic className="h-4 w-4" />
+                        ) : (
+                          <PenLine className="h-4 w-4" />
+                        )}
+                        <span>
+                          {practiceMode === "shadowing" ? "Shadowing" : "Chép chính tả"}
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setPracticeMode(null)}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <ArrowLeft className="h-4 w-4 mr-1" />
+                        Đổi chế độ
+                      </Button>
+                    </div>
+
+                    {practiceMode === "shadowing" ? (
+                      <ShadowingPanel
+                        sentences={sentences}
+                        currentIndex={currentSentenceIndex}
+                        onIndexChange={setCurrentSentenceIndex}
+                        onPlaySentence={handlePlaySentence}
+                        level={currentLesson.level}
+                      />
+                    ) : (
+                      <DictationPanel
+                        sentences={sentences}
+                        currentIndex={currentSentenceIndex}
+                        onIndexChange={setCurrentSentenceIndex}
+                        onPlaySentence={handlePlaySentence}
+                        level={currentLesson.level}
+                      />
+                    )}
+                  </div>
+                )}
+              </>
             )}
           </div>
 
