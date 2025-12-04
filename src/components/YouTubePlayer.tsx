@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface YouTubePlayerProps {
   videoId: string;
@@ -18,6 +18,12 @@ export const YouTubePlayer = ({ videoId, onTimeUpdate, startTime, endTime }: You
   const playerRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const endTimeRef = useRef<number | undefined>(endTime);
+
+  useEffect(() => {
+    endTimeRef.current = endTime;
+  }, [endTime]);
 
   useEffect(() => {
     const loadYouTubeAPI = () => {
@@ -43,9 +49,16 @@ export const YouTubePlayer = ({ videoId, onTimeUpdate, startTime, endTime }: You
           },
           events: {
             onReady: () => {
+              setIsReady(true);
               intervalRef.current = setInterval(() => {
-                if (playerRef.current?.getCurrentTime && onTimeUpdate) {
-                  onTimeUpdate(playerRef.current.getCurrentTime());
+                if (playerRef.current?.getCurrentTime) {
+                  const currentTime = playerRef.current.getCurrentTime();
+                  onTimeUpdate?.(currentTime);
+                  
+                  // Stop at endTime
+                  if (endTimeRef.current && currentTime >= endTimeRef.current) {
+                    playerRef.current.pauseVideo();
+                  }
                 }
               }, 100);
             },
@@ -61,21 +74,17 @@ export const YouTubePlayer = ({ videoId, onTimeUpdate, startTime, endTime }: You
     }
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      if (playerRef.current?.destroy) {
-        playerRef.current.destroy();
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (playerRef.current?.destroy) playerRef.current.destroy();
     };
   }, [videoId]);
 
   useEffect(() => {
-    if (playerRef.current?.seekTo && startTime !== undefined) {
+    if (isReady && playerRef.current?.seekTo && startTime !== undefined) {
       playerRef.current.seekTo(startTime, true);
       playerRef.current.playVideo();
     }
-  }, [startTime]);
+  }, [startTime, isReady]);
 
   return (
     <div className="aspect-video w-full rounded-lg overflow-hidden bg-muted">
