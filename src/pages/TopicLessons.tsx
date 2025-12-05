@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useLessons } from "@/hooks/useLessons";
 import { useTopics } from "@/hooks/useTopics";
 import { TopicCard } from "@/components/TopicCard";
-import { formatDuration } from "@/services/api";
+import { formatDuration, getYoutubeThumbnail } from "@/services/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronRight, Headphones } from "lucide-react";
 
@@ -56,7 +56,7 @@ const TopicLessons = () => {
               <Link key={lesson.id} to={`/topic/${topicId}/lesson/${lesson.id}`}>
                 <TopicCard
                   title={lesson.title}
-                  thumbnail={lesson.thumbnailUrl}
+                  thumbnail={lesson.thumbnailUrl || getYoutubeThumbnail(lesson.videoUrl)}
                   duration={formatDuration(lesson.durationSeconds)}
                   level={lesson.level}
                   views={lesson.viewCount}
