@@ -32,6 +32,16 @@ export const getYoutubeVideoId = (url: string): string | null => {
   return match ? match[1] : null;
 };
 
+export const getYoutubeThumbnail = (videoUrl: string): string => {
+  const videoId = getYoutubeVideoId(videoUrl);
+  if (videoId) {
+    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+  }
+  // Fallback to random image
+  const randomId = Math.floor(Math.random() * 1000);
+  return `https://picsum.photos/seed/${randomId}/800/450`;
+};
+
 export const formatDuration = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
