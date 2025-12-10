@@ -15,18 +15,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+interface NavLink {
+  label: string;
+  to: string;
+  external?: boolean;
+}
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
 
   const navLinks = useMemo(
-    () => [
+    (): NavLink[] => [
       { label: "Trang chủ", to: "/" },
       { label: "Đánh giá trình độ", to: "/assessment" },
       { label: "Lộ trình học", to: "/study-plan" },
       { label: "Tiến độ học tập", to: "/dashboard" },
-      { label: "Luyện tập", to: "https://congkcks.github.io/pixel-perfect-labs-01876-96953-53253-15-94322/", external: true },
+      { label: "Luyện tập 4 kỹ năng", to: "/luyen-tap" },
 
       // { label: "Tất cả trang", to: "/all-interfaces" },
     ],
@@ -90,25 +96,13 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden flex-1 items-center justify-center gap-8 md:flex">
             {navLinks.map((link) => (
-              link.external ? (
-                <a
-                  key={link.to}
-                  href={link.to}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1 text-foreground transition-colors hover:text-toeic-blue"
-                >
-                  {link.label}
-                </a>
-              ) : (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="px-3 py-1 text-foreground transition-colors hover:text-toeic-blue"
-                >
-                  {link.label}
-                </Link>
-              )
+              <Link
+                key={link.to}
+                to={link.to}
+                className="px-3 py-1 text-foreground transition-colors hover:text-toeic-blue"
+              >
+                {link.label}
+              </Link>
             ))}
           </nav>
 
@@ -191,27 +185,14 @@ const Header = () => {
           <div className="mt-4 space-y-4 pb-4 md:hidden">
             <nav className="flex flex-col space-y-4">
               {navLinks.map((link) => (
-                link.external ? (
-                  <a
-                    key={link.to}
-                    href={link.to}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-left text-foreground transition-colors hover:text-toeic-blue"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {link.label}
-                  </a>
-                ) : (
-                  <button
-                    key={link.to}
-                    type="button"
-                    onClick={() => handleNavigate(link.to)}
-                    className="text-left text-foreground transition-colors hover:text-toeic-blue"
-                  >
-                    {link.label}
-                  </button>
-                )
+                <button
+                  key={link.to}
+                  type="button"
+                  onClick={() => handleNavigate(link.to)}
+                  className="text-left text-foreground transition-colors hover:text-toeic-blue"
+                >
+                  {link.label}
+                </button>
               ))}
             </nav>
             {!isAuthenticated ? (

@@ -32,6 +32,13 @@ import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
 import RequireAuth from "@/components/RequireAuth";
 import { AuthProvider } from "@/context/AuthContext";
+import LuyenTap from "./pages/LuyenTap";
+import ListeningPractice from "./pages/ListeningPractice";
+import ListeningPracticeLesson from "./pages/ListeningPracticeLesson";
+import TestList from "./pages/TestList";
+import TestConfiguration from "./pages/TestConfiguration";
+import TestExam from "./pages/TestExam";
+import CreateLesson from "./pages/CreateLesson";
 
 const queryClient = new QueryClient();
 
@@ -43,60 +50,69 @@ const App = () => (
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/study-plan" element={<StudyPlan />} />
-          <Route path="/assessment" element={<Assessment />} />
-          <Route
-            path="/dashboard"
-            element={(
-              <RequireAuth>
-                <DashboardPage />
-              </RequireAuth>
-            )}
-          />
-          <Route
-            path="/admin"
-            element={(
-              <RequireAuth roles={["Admin"]} forbiddenRedirect="/">
-                <AdminDashboard />
-              </RequireAuth>
-            )}
-          />
-          <Route path="/lesson/reading/:readingId" element={<ReadingLessonPage />} />
-          <Route path="/lesson/listening" element={<ListeningLessonPage />} />
-          <Route path="/lesson/writing" element={<WritingLessonPage />} />
-          <Route path="/lesson/conversation" element={<ConversationPracticePage />} />
-          <Route path="/ai-assessment" element={<AIAssessmentPage />} />
-          <Route path="/ai-analysis" element={<AIAnalysisPage />} />
-          <Route path="/detailed-lesson" element={<DetailedLessonPage />} />
-          <Route path="/all-interfaces" element={<AllInterfacesPage />} />
-          <Route path="/interactive-story" element={<InteractiveStoryPage />} />
-          <Route path="/vocabulary-builder" element={<VocabularyBuilderPage />} />
-          <Route path="/pronunciation-practice" element={<PronunciationPracticePage />} />
-          <Route path="/grammar-game" element={<GrammarGamePage />} />
-          <Route path="/speaking-challenge" element={<SpeakingChallengePage />} />
-          {/* Auth routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route
-            path="/profile"
-            element={(
-              <RequireAuth>
-                <ProfilePage />
-              </RequireAuth>
-            )}
-          />
-          {/* New learning flow */}
-          <Route path="/day1-intro" element={<Day1IntroPage />} />
-          <Route path="/lesson/overview/:maBai" element={<LessonOverviewPage />} />
-          <Route path="/roadmap/:maLoTrinh/:filter?" element={<RoadmapLessonsPage />} />
-          <Route path="/reading-doc/:maBaiDoc" element={<ReadingDocDetailPage />} />
-          <Route path="/listening-item/:maBaiNghe" element={<ListeningItemPage />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            <Route path="/" element={<Index />} />
+            <Route path="/study-plan" element={<StudyPlan />} />
+            <Route path="/luyen-tap" element={<LuyenTap />} />
+            <Route path="/assessment" element={<Assessment />} />
+            <Route path="/listening-practice" element={<ListeningPractice />} />
+            <Route path="/listening-practice-lesson" element={<ListeningPracticeLesson />} />
+            <Route path="/test-list" element={<TestList />} />
+            <Route path="/test-config/:testId" element={<TestConfiguration />} />
+            <Route path="/test-exam/:testId" element={<TestExam />} />
+            <Route path="/create-lesson" element={<CreateLesson />} />
+
+
+            <Route
+              path="/dashboard"
+              element={(
+                <RequireAuth>
+                  <DashboardPage />
+                </RequireAuth>
+              )}
+            />
+            <Route
+              path="/admin"
+              element={(
+                <RequireAuth roles={["Admin"]} forbiddenRedirect="/">
+                  <AdminDashboard />
+                </RequireAuth>
+              )}
+            />
+            <Route path="/lesson/reading/:readingId" element={<ReadingLessonPage />} />
+            <Route path="/lesson/listening" element={<ListeningLessonPage />} />
+            <Route path="/lesson/writing" element={<WritingLessonPage />} />
+            <Route path="/lesson/conversation" element={<ConversationPracticePage />} />
+            <Route path="/ai-assessment" element={<AIAssessmentPage />} />
+            <Route path="/ai-analysis" element={<AIAnalysisPage />} />
+            <Route path="/detailed-lesson" element={<DetailedLessonPage />} />
+            <Route path="/all-interfaces" element={<AllInterfacesPage />} />
+            <Route path="/interactive-story" element={<InteractiveStoryPage />} />
+            <Route path="/vocabulary-builder" element={<VocabularyBuilderPage />} />
+            <Route path="/pronunciation-practice" element={<PronunciationPracticePage />} />
+            <Route path="/grammar-game" element={<GrammarGamePage />} />
+            <Route path="/speaking-challenge" element={<SpeakingChallengePage />} />
+            {/* Auth routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route
+              path="/profile"
+              element={(
+                <RequireAuth>
+                  <ProfilePage />
+                </RequireAuth>
+              )}
+            />
+            {/* New learning flow */}
+            <Route path="/day1-intro" element={<Day1IntroPage />} />
+            <Route path="/lesson/overview/:maBai" element={<LessonOverviewPage />} />
+            <Route path="/roadmap/:maLoTrinh/:filter?" element={<RoadmapLessonsPage />} />
+            <Route path="/reading-doc/:maBaiDoc" element={<ReadingDocDetailPage />} />
+            <Route path="/listening-item/:maBaiNghe" element={<ListeningItemPage />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
