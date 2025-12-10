@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import StudyPlan from "./pages/StudyPlan";
 import Assessment from "./pages/Assessment";
@@ -39,6 +39,8 @@ import TestList from "./pages/TestList";
 import TestConfiguration from "./pages/TestConfiguration";
 import TestExam from "./pages/TestExam";
 import CreateLesson from "./pages/CreateLesson";
+import Topics from "./pages/Topics";
+import TopicDetail from "./pages/TopicDetail";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +62,8 @@ const App = () => (
             <Route path="/test-config/:testId" element={<TestConfiguration />} />
             <Route path="/test-exam/:testId" element={<TestExam />} />
             <Route path="/create-lesson" element={<CreateLesson />} />
+            <Route path="/topics" element={<Topics />} />
+            <Route path="/topic/:id" element={<TopicDetail />} />
 
 
             <Route

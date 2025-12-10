@@ -125,8 +125,8 @@ const LuyenTap = () => {
             title: "Hội Thoại",
             description: "Luyện nói với AI, thực hành giao tiếp theo tình huống thực tế",
             icon: <MessageCircle className="w-7 h-7 text-white" />,
-            path: "https://congkcks.github.io/convo-speak/#/topics",
-            external: true,
+            path: "/topics",
+            external: false,
             gradient: "bg-gradient-to-br from-fuchsia-500 to-pink-600",
             iconBg: "bg-white/20"
         },
