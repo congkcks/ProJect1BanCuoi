@@ -41,6 +41,9 @@ import TestExam from "./pages/TestExam";
 import CreateLesson from "./pages/CreateLesson";
 import Topics from "./pages/Topics";
 import TopicDetail from "./pages/TopicDetail";
+import TopicLessons from "./pages/TopicLessons";
+import LessonDetail from "./pages/LessonDetail";
+import LuyenNgheVideo from "./pages/LuyenNgheVideo";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +67,9 @@ const App = () => (
             <Route path="/create-lesson" element={<CreateLesson />} />
             <Route path="/topics" element={<Topics />} />
             <Route path="/topic/:id" element={<TopicDetail />} />
+            <Route path="/topic/:topicId" element={<TopicLessons />} />
+            <Route path="/topic/:topicId/lesson/:lessonId" element={<LessonDetail />} />
+            <Route path="/luyen-nghe-video" element={<LuyenNgheVideo />} />
 
 
             <Route
