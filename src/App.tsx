@@ -39,12 +39,15 @@ import TestList from "./pages/TestList";
 import TestConfiguration from "./pages/TestConfiguration";
 import TestExam from "./pages/TestExam";
 import CreateLesson from "./pages/CreateLesson";
-import Topics from "./pages/Topics";
-import TopicDetail from "./pages/TopicDetail";
 import TopicLessons from "./pages/TopicLessons";
 import LessonDetail from "./pages/LessonDetail";
 import LuyenNgheVideo from "./pages/LuyenNgheVideo";
-
+import ListTestDe from "./pages/ListTestDe";
+import Review from "./pages/Review";
+import Test from "./pages/Test";
+import History from "./pages/History";
+import Topics from "./pages/Topics";
+import TopicDetail from "./pages/TopicDetail";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -61,7 +64,7 @@ const App = () => (
             <Route path="/assessment" element={<Assessment />} />
             <Route path="/listening-practice" element={<ListeningPractice />} />
             <Route path="/listening-practice-lesson" element={<ListeningPracticeLesson />} />
-            <Route path="/test-list" element={<TestList />} />
+            <Route path="/test-list" element={<ListTestDe />} />
             <Route path="/test-config/:testId" element={<TestConfiguration />} />
             <Route path="/test-exam/:testId" element={<TestExam />} />
             <Route path="/create-lesson" element={<CreateLesson />} />
@@ -70,7 +73,10 @@ const App = () => (
             <Route path="/topic/:topicId" element={<TopicLessons />} />
             <Route path="/topic/:topicId/lesson/:lessonId" element={<LessonDetail />} />
             <Route path="/luyen-nghe-video" element={<LuyenNgheVideo />} />
-
+            <Route path="/luyen-de" element={<ListTestDe />} />
+            <Route path="/test/:testId" element={<Test />} />
+            <Route path="/review/:sessionId" element={<Review />} />
+            <Route path="/history" element={<History />} />
 
             <Route
               path="/dashboard"

@@ -8,7 +8,7 @@ if (typeof window !== 'undefined') {
     __API_BASE_URL = '/api';
   }
 }
-const API_BASE_URL = __API_BASE_URL || 'http://localhost:5153/api';
+const API_BASE_URL = __API_BASE_URL || 'https://beprojetc1.onrender.com/api';
 if (typeof window !== 'undefined') {
   console.info('[API] base url', API_BASE_URL);
 }
@@ -444,7 +444,7 @@ export class ApiService {
           return t.trim();
         }
       }
-    } catch {}
+    } catch { }
     return null;
   }
 
@@ -477,7 +477,7 @@ export class ApiService {
       let payload: any = null;
       try {
         payload = contentType.includes('application/json') ? await resp.clone().json() : await resp.clone().text();
-      } catch {}
+      } catch { }
       const err: any = new Error((payload && payload.message) || `API Error: ${resp.status}`);
       err.status = resp.status;
       err.payload = payload;
@@ -660,7 +660,7 @@ export class ApiService {
     if (['completed', 'hoàn thành', 'hoan thanh'].includes(normalized)) {
       return 'Completed';
     }
-  if (['inprogress', 'in-progress', 'in progress', 'đang học', 'dang hoc', 'đã mở khóa', 'da mo khoa', 'đã mở khoá', 'da mo khoá'].includes(normalized)) {
+    if (['inprogress', 'in-progress', 'in progress', 'đang học', 'dang hoc', 'đã mở khóa', 'da mo khoa', 'đã mở khoá', 'da mo khoá'].includes(normalized)) {
       return 'InProgress';
     }
     return 'Pending';
@@ -726,7 +726,7 @@ export class ApiService {
             localStorage.setItem('userId', String(claimId));
           }
         }
-      } catch {}
+      } catch { }
     } else {
       localStorage.setItem('userId', userId);
     }
@@ -1056,7 +1056,7 @@ export class ApiService {
       headers: { 'Accept': '*/*', ...this.buildAuthHeader() },
     });
   }
-  
+
 
   async getLessonsByRoadmap(maLoTrinh: string): Promise<RoadmapLessonsResponse> {
     const encoded = encodeURIComponent(maLoTrinh);
@@ -1224,7 +1224,7 @@ export class ApiService {
         window.dispatchEvent(new CustomEvent('auth:token-updated'));
         window.dispatchEvent(new CustomEvent('auth:logged-in'));
       }
-    } catch {}
+    } catch { }
 
     return { message: res?.message, token, user: res?.user } as AuthLoginResponse;
   }
