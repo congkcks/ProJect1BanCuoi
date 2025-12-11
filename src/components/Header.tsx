@@ -32,7 +32,7 @@ const Header = () => {
       { label: "Đánh giá trình độ", to: "/assessment" },
       { label: "Lộ trình học", to: "/study-plan" },
       { label: "Tiến độ học tập", to: "/dashboard" },
-      { label: "Luyện tập 4 kỹ năng", to: "/luyen-tap" },
+      { label: "Luyện tập", to: "/luyen-tap" },
 
       // { label: "Tất cả trang", to: "/all-interfaces" },
     ],
@@ -90,7 +90,7 @@ const Header = () => {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-hero">
               <span className="text-lg font-bold text-white">U</span>
             </div>
-            <span className="text-xl font-bold text-toeic-navy">UTC TOEIC</span>
+            <span className="text-xl font-bold text-toeic-navy">UTC-English</span>
           </div>
 
           {/* Desktop Navigation */}

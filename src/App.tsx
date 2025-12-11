@@ -48,6 +48,9 @@ import Test from "./pages/Test";
 import History from "./pages/History";
 import Topics from "./pages/Topics";
 import TopicDetail from "./pages/TopicDetail";
+import LuyenTuVung from "./pages/LuyenTuVung";
+import { GroupCard } from "./components/GroupCard";
+import GroupDetail from "./pages/GroupDetail";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -77,6 +80,8 @@ const App = () => (
             <Route path="/test/:testId" element={<Test />} />
             <Route path="/review/:sessionId" element={<Review />} />
             <Route path="/history" element={<History />} />
+            <Route path="/luyentu" element={<LuyenTuVung />} />
+            <Route path="/group/:groupId" element={<GroupDetail />} />
 
             <Route
               path="/dashboard"

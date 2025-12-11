@@ -116,8 +116,8 @@ const LuyenTap = () => {
             title: "Từ Vựng",
             description: "Flashcard thông minh, học từ vựng hiệu quả với spaced repetition",
             icon: <BookMarked className="w-7 h-7 text-white" />,
-            path: "https://congkcks.github.io/flashcard-master-96/#/",
-            external: true,
+            path: "/luyentu",
+            external: false,
             gradient: "bg-gradient-to-br from-cyan-500 to-blue-600",
             iconBg: "bg-white/20"
         },

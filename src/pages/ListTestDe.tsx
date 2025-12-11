@@ -43,7 +43,7 @@ const ListTestDe = () => {
                             </div>
                             <div>
                                 <h1 className="text-2xl font-bold text-toeic-navy">
-                                    UTC TOEIC
+                                    UTC-English
                                 </h1>
                                 <p className="text-xs text-muted-foreground">TOEIC Practice Platform</p>
                             </div>
