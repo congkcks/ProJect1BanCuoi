@@ -71,10 +71,13 @@ const App = () => (
             <Route path="/test-config/:testId" element={<TestConfiguration />} />
             <Route path="/test-exam/:testId" element={<TestExam />} />
             <Route path="/create-lesson" element={<CreateLesson />} />
-            <Route path="/topics" element={<Topics />} />
-            <Route path="/topic/:id" element={<TopicDetail />} />
-            <Route path="/topic/:topicId" element={<TopicLessons />} />
+            <Route path="/topicspeaker" element={<Topics />} />
+
+            {/* Đặt route chi tiết lên trước */}
+            <Route path="/topicspeaker/:id" element={<TopicDetail />} />
             <Route path="/topic/:topicId/lesson/:lessonId" element={<LessonDetail />} />
+            <Route path="/topic/:topicId" element={<TopicLessons />} />
+
             <Route path="/luyen-nghe-video" element={<LuyenNgheVideo />} />
             <Route path="/luyen-de" element={<ListTestDe />} />
             <Route path="/test/:testId" element={<Test />} />
@@ -82,6 +85,7 @@ const App = () => (
             <Route path="/history" element={<History />} />
             <Route path="/luyentu" element={<LuyenTuVung />} />
             <Route path="/group/:groupId" element={<GroupDetail />} />
+
 
             <Route
               path="/dashboard"

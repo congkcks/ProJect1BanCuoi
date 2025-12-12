@@ -91,8 +91,8 @@ const LuyenTap = () => {
             title: "Nghe Video",
             description: "Học tiếng Anh qua video thực tế, phụ đề song ngữ",
             icon: <Video className="w-7 h-7 text-white" />,
-            path: "https://congkcks.github.io/listen-learn-english/",
-            external: true,
+            path: "/luyen-nghe-video",
+            external: false,
             gradient: "bg-gradient-to-br from-rose-500 to-pink-600",
             iconBg: "bg-white/20"
         },
@@ -125,7 +125,7 @@ const LuyenTap = () => {
             title: "Hội Thoại",
             description: "Luyện nói với AI, thực hành giao tiếp theo tình huống thực tế",
             icon: <MessageCircle className="w-7 h-7 text-white" />,
-            path: "/topics",
+            path: "/topicspeaker",
             external: false,
             gradient: "bg-gradient-to-br from-fuchsia-500 to-pink-600",
             iconBg: "bg-white/20"

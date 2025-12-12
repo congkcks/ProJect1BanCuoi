@@ -177,7 +177,7 @@ const Topics = () => {
             <Card
               key={topic.topic_id}
               className="cursor-pointer transition-all hover:scale-105 hover:shadow-lg border-border/50 bg-card/70 hover:bg-card"
-              onClick={() => navigate(`/topic/${topic.topic_id}`)}
+              onClick={() => navigate(`/topicspeaker/${topic.topic_id}`)}
             >
               <CardHeader>
                 <div className="mb-2 flex items-center justify-between">
