@@ -19,10 +19,10 @@ const Test = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Get userId and email from URL query parameters (optional - guest mode if not provided)
-  const userId = searchParams.get("userId") ? parseInt(searchParams.get("userId")!) : null;
-  const userEmail = searchParams.get("email");
-  const isGuestMode = !userId || !userEmail;
+  // Kiểm tra email từ localStorage - nếu có thì dùng, không thì guest mode
+  const storedEmail = localStorage.getItem("userEmail");
+  const userEmail = storedEmail;
+  const isGuestMode = !userEmail;
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Map<number, string>>(new Map());
@@ -64,11 +64,10 @@ const Test = () => {
   useEffect(() => {
     const startSession = async () => {
       // Only start session if user is logged in (not guest mode)
-      if (testId && !sessionId && !isGuestMode && userId && userEmail) {
+      if (testId && !sessionId && !isGuestMode && userEmail) {
         try {
-          console.log("Starting session with:", { userId, userEmail, testId });
+          console.log("Starting session with:", { userEmail, testId });
           const session = await testApi.startSession(
-            userId,
             userEmail,
             testId
           );
@@ -89,14 +88,14 @@ const Test = () => {
       }
     };
     startSession();
-  }, [testId, sessionId, userId, userEmail, isGuestMode, toast]);
+  }, [testId, sessionId, userEmail, isGuestMode, toast]);
 
-  // Store userId in localStorage for history page
+  // Store email in localStorage for history page
   useEffect(() => {
-    if (userId) {
-      localStorage.setItem("userId", userId.toString());
+    if (userEmail) {
+      localStorage.setItem("userEmail", userEmail);
     }
-  }, [userId]);
+  }, [userEmail]);
 
   const handleAnswer = (questionId: number, answer: string) => {
     setUserAnswers((prev) => new Map(prev).set(questionId, answer));
@@ -139,7 +138,7 @@ const Test = () => {
     }
 
     // Logged in user - save results
-    if (!sessionId || !userId) {
+    if (!sessionId) {
       toast({
         title: "Error",
         description: "No active session found",
@@ -156,7 +155,6 @@ const Test = () => {
       // Submit answers
       const answersArray = testDetail.questions.map((question) => ({
         sessionId,
-        userId,
         questionId: question.questionId,
         selectedOption: userAnswers.get(question.questionId) || "",
         isCorrect: userAnswers.get(question.questionId) === question.correctAnswer,
@@ -200,9 +198,9 @@ const Test = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-hero">
         <div className="text-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin text-toeic-blue mx-auto" />
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
           <p className="text-muted-foreground">Loading test...</p>
         </div>
       </div>
@@ -211,7 +209,7 @@ const Test = () => {
 
   if (!testDetail) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-hero">
         <Card>
           <CardContent className="p-6 text-center">
             <p className="text-muted-foreground mb-4">Test not found</p>
@@ -240,37 +238,25 @@ const Test = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
-      {/* Decorative background elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-toeic-blue/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-40 right-10 w-96 h-96 bg-toeic-success/5 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-toeic-warning/5 rounded-full blur-3xl"></div>
-      </div>
-
+    <div className="min-h-screen bg-gradient-hero">
       {/* Header */}
-      <header className="border-b border-border/50 bg-card/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Button variant="ghost" onClick={() => navigate("/")} className="gap-2 hover:bg-toeic-blue/10">
+            <Button variant="ghost" onClick={() => navigate("/")} className="gap-2">
               <Home className="h-4 w-4" />
-              Trang chủ
+              Home
             </Button>
-            <h1 className="text-xl font-bold text-toeic-navy">{testDetail.title}</h1>
+            <h1 className="text-xl font-bold">{testDetail.title}</h1>
             <div className="flex items-center gap-2 text-sm">
               {isGuestMode ? (
-                <div className="px-3 py-1.5 rounded-full bg-toeic-warning/10 text-toeic-warning">
+                <div className="px-3 py-1.5 rounded-full bg-warning/10 text-warning">
                   <span className="font-medium">Chế độ khách (không lưu)</span>
                 </div>
               ) : (
-                <>
-                  <div className="px-3 py-1.5 rounded-full bg-toeic-blue/10 text-toeic-blue">
-                    <span className="font-medium">ID: {userId}</span>
-                  </div>
-                  <div className="px-3 py-1.5 rounded-full bg-muted text-muted-foreground">
-                    {userEmail}
-                  </div>
-                </>
+                <div className="px-3 py-1.5 rounded-full bg-primary/10 text-primary">
+                  <span className="font-medium">{userEmail}</span>
+                </div>
               )}
             </div>
           </div>
@@ -283,10 +269,10 @@ const Test = () => {
           <div className="lg:col-span-1 space-y-4">
             {/* Guest Score Card - Show when in review mode */}
             {isReviewMode && guestScore !== null && (
-              <Card className="border-toeic-success/20 bg-toeic-success/5">
+              <Card className="border-primary/20 bg-primary/5">
                 <CardContent className="p-4 text-center">
-                  <h3 className="font-semibold text-toeic-success mb-2">Điểm của bạn</h3>
-                  <p className="text-3xl font-bold text-toeic-success">{guestScore}</p>
+                  <h3 className="font-semibold text-primary mb-2">Điểm của bạn</h3>
+                  <p className="text-3xl font-bold text-primary">{guestScore}</p>
                   <p className="text-sm text-muted-foreground mt-1">/ 990</p>
                 </CardContent>
               </Card>
@@ -302,9 +288,9 @@ const Test = () => {
             />
 
             {/* Question Navigator */}
-            <Card className="bg-card/70 border-border/50 shadow-lg">
+            <Card>
               <CardContent className="p-4">
-                <h3 className="font-semibold mb-3 text-toeic-navy">Danh sách câu hỏi</h3>
+                <h3 className="font-semibold mb-3">Questions</h3>
                 <div className="grid grid-cols-5 gap-2">
                   {testDetail.questions.map((q, idx) => {
                     const userAnswer = userAnswers.get(q.questionId);
@@ -318,19 +304,19 @@ const Test = () => {
                         className={`
                           aspect-square rounded-md text-sm font-medium transition-all
                           ${idx === currentQuestionIndex
-                            ? 'ring-2 ring-toeic-blue ring-offset-2'
+                            ? 'ring-2 ring-primary ring-offset-2'
                             : ''
                           }
                           ${isReviewMode
                             ? isAnswered
                               ? isCorrect
-                                ? 'bg-toeic-success text-white'
-                                : 'bg-toeic-danger text-white'
+                                ? 'bg-emerald-500 text-white font-bold shadow-md'
+                                : 'bg-red-500 text-white font-bold shadow-md'
                               : 'bg-muted text-muted-foreground'
                             : idx === currentQuestionIndex
-                              ? 'bg-toeic-blue text-white'
+                              ? 'bg-primary text-primary-foreground'
                               : isAnswered
-                                ? 'bg-toeic-success text-white'
+                                ? 'bg-emerald-500 text-white font-bold shadow-md'
                                 : 'bg-muted hover:bg-muted/80'
                           }
                         `}
@@ -347,10 +333,10 @@ const Test = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Review Mode Banner */}
             {isReviewMode && (
-              <Card className="border-toeic-warning/20 bg-toeic-warning/5">
+              <Card className="border-warning/20 bg-warning/5">
                 <CardContent className="p-4 flex items-center justify-between">
                   <div>
-                    <h3 className="font-semibold text-toeic-warning">Chế độ xem đáp án</h3>
+                    <h3 className="font-semibold text-warning">Chế độ xem đáp án</h3>
                     <p className="text-sm text-muted-foreground">Kết quả không được lưu trong chế độ khách</p>
                   </div>
                   <Button onClick={() => navigate("/")} variant="outline">
@@ -361,10 +347,10 @@ const Test = () => {
             )}
 
             {/* Question Display with Review Mode */}
-            <Card className="bg-card/70 border-border/50 shadow-lg">
+            <Card>
               <CardContent className="p-6 space-y-6">
                 <div className="mb-4">
-                  <span className="text-sm text-muted-foreground font-medium bg-toeic-blue/10 text-toeic-blue px-3 py-1 rounded-full inline-block">Câu {currentQuestionIndex + 1} / {testDetail.totalQuestions} (Part {currentQuestion.part})</span>
+                  <span className="text-sm text-muted-foreground">Câu {currentQuestionIndex + 1} / {testDetail.totalQuestions} (Part {currentQuestion.part})</span>
                 </div>
 
                 {/* Audio Player */}
@@ -380,8 +366,8 @@ const Test = () => {
 
                 {/* Passage Text */}
                 {currentQuestion.passageText && (
-                  <div className="p-4 bg-gradient-to-r from-toeic-blue/5 to-toeic-success/5 rounded-lg border border-toeic-blue/20">
-                    <p className="text-sm whitespace-pre-wrap text-foreground">{currentQuestion.passageText}</p>
+                  <div className="p-4 bg-accent/50 rounded-lg border border-accent">
+                    <p className="text-sm whitespace-pre-wrap">{currentQuestion.passageText}</p>
                   </div>
                 )}
 
@@ -402,7 +388,7 @@ const Test = () => {
 
                 {/* Question Text */}
                 {currentQuestion.questionText && (
-                  <p className="text-lg font-bold text-toeic-navy bg-toeic-blue/5 p-4 rounded-lg border-l-4 border-toeic-blue">{currentQuestion.questionText}</p>
+                  <p className="text-lg font-medium">{currentQuestion.questionText}</p>
                 )}
 
                 {/* Options */}
@@ -447,9 +433,9 @@ const Test = () => {
 
             {/* Explanation for current question in review mode */}
             {isReviewMode && currentQuestion.explanation && (
-              <Card className="border-toeic-blue/20 bg-toeic-blue/5">
+              <Card className="border-primary/20 bg-primary/5">
                 <CardContent className="p-4">
-                  <h4 className="font-semibold text-toeic-blue mb-2">Giải thích:</h4>
+                  <h4 className="font-semibold text-primary mb-2">Giải thích:</h4>
                   <p className="text-sm">{currentQuestion.explanation}</p>
                 </CardContent>
               </Card>
@@ -457,9 +443,9 @@ const Test = () => {
 
             {/* Full Answer List in Review Mode */}
             {isReviewMode && (
-              <Card className="bg-card/70 border-border/50 shadow-lg">
+              <Card>
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-bold mb-4 text-toeic-navy">Bảng tổng hợp đáp án</h3>
+                  <h3 className="text-lg font-bold mb-4">Bảng tổng hợp đáp án</h3>
                   <div className="space-y-4 max-h-[400px] overflow-y-auto">
                     {testDetail.questions.map((q, idx) => {
                       const userAnswer = userAnswers.get(q.questionId);
@@ -528,7 +514,7 @@ const Test = () => {
                 variant="outline"
                 onClick={() => setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))}
                 disabled={currentQuestionIndex === 0}
-                className="gap-2 hover:bg-toeic-blue/10 hover:border-toeic-blue"
+                className="gap-2"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Trước
@@ -548,7 +534,7 @@ const Test = () => {
               ) : currentQuestionIndex === testDetail.questions.length - 1 ? (
                 <Button
                   onClick={() => setShowSubmitDialog(true)}
-                  className="gap-2 bg-toeic-success hover:bg-toeic-success/90 text-white"
+                  className="gap-2 bg-success hover:bg-success/90"
                 >
                   <CheckCircle className="h-4 w-4" />
                   Nộp bài

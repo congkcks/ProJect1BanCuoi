@@ -550,7 +550,9 @@ export class ApiService {
     };
 
     try {
+      console.log('[API.request] Starting fetch:', { url, method: options.method || 'GET' });
       const response = await fetch(url, config);
+      console.log('[API.request] Got response:', { url, status: response.status, statusText: response.statusText });
       // Debug outgoing Authorization header once per request (dev only)
       if (usedAuthHeader) {
         console.debug('[API] fetch', { url, hasAuth: usedAuthHeader, tokenPreview: (this.token || '').slice(0, 16), sentHeaders: config.headers });
@@ -609,7 +611,12 @@ export class ApiService {
 
       return (await response.text()) as unknown as T;
     } catch (error) {
-      console.error('API Request failed:', error);
+      console.error('[API] Request failed at fetch:', {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        url
+      });
       throw error;
     }
   }
@@ -1005,11 +1012,29 @@ export class ApiService {
   }
 
   async createAdminLesson(payload: CreateLessonPayload): Promise<any> {
-    return this.request<any>('/BaiHoc/admin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': '*/*', ...this.buildAuthHeader() },
-      body: JSON.stringify(payload),
+    const authHeader = this.buildAuthHeader();
+    console.log('[API] createAdminLesson:', {
+      endpoint: '/BaiHoc/admin',
+      hasAuth: !!authHeader.Authorization,
+      authPreview: authHeader.Authorization ? `${authHeader.Authorization.slice(0, 20)}...` : 'NONE',
+      payload
     });
+    try {
+      const result = await this.request<any>('/BaiHoc/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': '*/*', ...authHeader },
+        body: JSON.stringify(payload),
+      });
+      console.log('[API] createAdminLesson SUCCESS:', result);
+      return result;
+    } catch (error) {
+      console.error('[API] createAdminLesson FAILED:', {
+        error,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        errorStack: error instanceof Error ? error.stack : undefined
+      });
+      throw error;
+    }
   }
 
   async updateAdminLesson(maBai: string, payload: UpdateLessonPayload): Promise<any> {

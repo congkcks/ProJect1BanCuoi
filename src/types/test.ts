@@ -49,5 +49,12 @@ export interface TestHistoryItem {
   testId: string;
   totalScore: number;
   startedAt: string;
-  finishedAt: string;
+  finishedAt: string | null;
+  duration: string | null;
+}
+
+export interface TestHistoryResponse {
+  userEmail: string;
+  totalSessions: number;
+  data: TestHistoryItem[];
 }

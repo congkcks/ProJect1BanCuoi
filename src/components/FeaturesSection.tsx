@@ -70,7 +70,7 @@ const FeaturesSection = () => {
             <span>Tính năng nổi bật</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-toeic-navy mb-4">
-            Tại sao chọn UTC TOEIC?
+            Tại sao chọn UTC EngLish?
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Chúng tôi cung cấp giải pháp học TOEIC toàn diện với công nghệ AI tiên tiến
@@ -108,7 +108,7 @@ const FeaturesSection = () => {
               Sẵn sàng bắt đầu hành trình TOEIC của bạn?
             </h3>
             <p className="text-muted-foreground mb-6">
-              Tham gia cùng hàng nghìn học viên đã thành công với UTC TOEIC
+              Tham gia cùng hàng nghìn học viên đã thành công với UTC EngLish
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

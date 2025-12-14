@@ -1,55 +1,33 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { testApi } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Loader2, Home, Clock, Trophy, Calendar, FileText } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
 const History = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [userId, setUserId] = useState<number | null>(null);
-  const [inputUserId, setInputUserId] = useState("");
 
-  useEffect(() => {
-    const storedUserId = localStorage.getItem("userId");
-    if (storedUserId) {
-      setUserId(Number(storedUserId));
-      setInputUserId(storedUserId);
-    }
-  }, []);
+  // Lấy email trực tiếp từ localStorage
+  const userEmail = localStorage.getItem("userEmail");
 
   const { data: history, isLoading, error } = useQuery({
-    queryKey: ["testHistory", userId],
-    queryFn: () => testApi.getTestHistory(userId!),
-    enabled: !!userId,
+    queryKey: ["testHistory", userEmail],
+    queryFn: async () => {
+      const result = await testApi.getTestHistory(userEmail!);
+      // API trả về object với data array
+      return result?.data || [];
+    },
+    enabled: !!userEmail,
   });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const id = Number(inputUserId);
-    if (isNaN(id) || id <= 0) {
-      toast({
-        title: "Invalid User ID",
-        description: "Please enter a valid user ID",
-        variant: "destructive",
-      });
-      return;
-    }
-    setUserId(id);
-    localStorage.setItem("userId", inputUserId);
-  };
 
   const handleViewReview = (sessionId: string) => {
     navigate(`/review/${sessionId}`);
   };
 
-  const calculateDuration = (startedAt: string, finishedAt: string) => {
+  const calculateDuration = (startedAt: string, finishedAt: string | null) => {
+    if (!finishedAt) return "Chưa hoàn thành";
     const start = new Date(startedAt);
     const finish = new Date(finishedAt);
     const durationMs = finish.getTime() - start.getTime();
@@ -74,76 +52,51 @@ const History = () => {
               <Home className="h-4 w-4" />
               Home
             </Button>
-            <h1 className="text-xl font-bold">Test History</h1>
+            <h1 className="text-xl font-bold">Lịch sử làm bài</h1>
             <div className="w-20" />
           </div>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* User ID Input */}
-        {!userId && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Enter Your User ID</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="userId">User ID</Label>
-                  <Input
-                    id="userId"
-                    type="number"
-                    value={inputUserId}
-                    onChange={(e) => setInputUserId(e.target.value)}
-                    placeholder="Enter your user ID"
-                    required
-                  />
-                </div>
-                <Button type="submit">View History</Button>
-              </form>
+        {/* Chưa có email - yêu cầu làm bài trước */}
+        {!userEmail ? (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">Bạn cần làm bài test trước để có lịch sử</p>
+              <Button onClick={() => navigate("/")}>Làm bài ngay</Button>
             </CardContent>
           </Card>
-        )}
-
-        {/* History List */}
-        {userId && (
+        ) : (
           <>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Your Test Sessions</h2>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setUserId(null);
-                  setInputUserId("");
-                  localStorage.removeItem("userId");
-                }}
-              >
-                Change User ID
-              </Button>
+              <div>
+                <h2 className="text-2xl font-bold">Lịch sử làm bài</h2>
+                <p className="text-sm text-muted-foreground">{userEmail}</p>
+              </div>
             </div>
 
             {isLoading ? (
               <div className="flex items-center justify-center py-20">
                 <div className="text-center space-y-4">
                   <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-                  <p className="text-muted-foreground">Loading your history...</p>
+                  <p className="text-muted-foreground">Đang tải lịch sử...</p>
                 </div>
               </div>
             ) : error ? (
               <Card>
                 <CardContent className="p-6 text-center">
-                  <p className="text-destructive mb-4">Failed to load test history</p>
-                  <Button onClick={() => navigate("/")}>Return Home</Button>
+                  <p className="text-destructive mb-4">Không thể tải lịch sử</p>
+                  <Button onClick={() => navigate("/")}>Về trang chủ</Button>
                 </CardContent>
               </Card>
             ) : !history || history.length === 0 ? (
               <Card>
                 <CardContent className="p-12 text-center">
                   <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground mb-4">No test history found</p>
-                  <Button onClick={() => navigate("/")}>Take a Test</Button>
+                  <p className="text-muted-foreground mb-4">Chưa có lịch sử làm bài</p>
+                  <Button onClick={() => navigate("/")}>Làm bài ngay</Button>
                 </CardContent>
               </Card>
             ) : (
@@ -184,7 +137,7 @@ const History = () => {
                         </div>
                       </div>
                       <Button className="w-full" variant="secondary">
-                        View Detailed Review
+                        Xem chi tiết
                       </Button>
                     </CardContent>
                   </Card>

@@ -1,15 +1,17 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSentences } from "@/hooks/useSentences";
 import { useLessons } from "@/hooks/useLessons";
 import { useTopics } from "@/hooks/useTopics";
 import { YouTubePlayer } from "@/components/YouTubePlayer";
 import { DictationPanel } from "@/components/DictationPanel";
+import { ShadowingPanel } from "@/components/ShadowingPanel";
 import { TranscriptPanel } from "@/components/TranscriptPanel";
+import { PracticeModeSelector, PracticeMode } from "@/components/PracticeModeSelector";
 import { getYoutubeVideoId, formatDuration } from "@/services/luyennghevideo";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronRight, Clock, Play, RotateCcw, Headphones } from "lucide-react";
+import { ChevronRight, Clock, Play, RotateCcw, Headphones, ArrowLeft, Mic, PenLine } from "lucide-react";
 import { Sentence } from "@/types/api";
 
 const LessonDetail = () => {
@@ -17,6 +19,7 @@ const LessonDetail = () => {
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [completedIndexes, setCompletedIndexes] = useState<number[]>([]);
   const [playTrigger, setPlayTrigger] = useState<{ start: number; end: number } | null>(null);
+  const [practiceMode, setPracticeMode] = useState<PracticeMode | null>(null);
 
   const { data: topics } = useTopics();
   const { data: lessons } = useLessons(topicId ? parseInt(topicId) : null);
@@ -73,7 +76,7 @@ const LessonDetail = () => {
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-level-b2 flex items-center justify-center">
               <Headphones className="h-4 w-4 text-white" />
             </div>
-            <span className="text-lg font-bold text-foreground">EnglishListen</span>
+            <span className="text-lg font-bold text-foreground">UTC EngLish</span>
           </Link>
         </div>
       </header>
@@ -140,15 +143,61 @@ const LessonDetail = () => {
               <h3 className="font-semibold text-card-foreground mt-4">{currentLesson.title}</h3>
             </div>
 
-            {/* Dictation Panel */}
+            {/* Practice Mode Selection or Panel */}
             {sentences && sentences.length > 0 && (
-              <DictationPanel
-                sentences={sentences}
-                currentIndex={currentSentenceIndex}
-                onIndexChange={setCurrentSentenceIndex}
-                onPlaySentence={handlePlaySentence}
-                level={currentLesson.level}
-              />
+              <>
+                {!practiceMode ? (
+                  <PracticeModeSelector onSelect={setPracticeMode} />
+                ) : (
+                  <div className="space-y-4">
+                    {/* Mode indicator and change button */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {practiceMode === "shadowing" ? (
+                          <Mic className="h-4 w-4" />
+                        ) : (
+                          <PenLine className="h-4 w-4" />
+                        )}
+                        <span>
+                          {practiceMode === "shadowing" ? "Shadowing" : "Chép chính tả"}
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setPracticeMode(null)}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <ArrowLeft className="h-4 w-4 mr-1" />
+                        Đổi chế độ
+                      </Button>
+                    </div>
+
+                    {practiceMode === "shadowing" ? (
+                      <ShadowingPanel
+                        sentences={sentences}
+                        currentIndex={currentSentenceIndex}
+                        onIndexChange={setCurrentSentenceIndex}
+                        onPlaySentence={handlePlaySentence}
+                        level={currentLesson.level}
+                      />
+                    ) : (
+                      <DictationPanel
+                        sentences={sentences}
+                        currentIndex={currentSentenceIndex}
+                        onIndexChange={setCurrentSentenceIndex}
+                        onPlaySentence={handlePlaySentence}
+                        level={currentLesson.level}
+                        onComplete={(index) => {
+                          if (!completedIndexes.includes(index)) {
+                            setCompletedIndexes([...completedIndexes, index]);
+                          }
+                        }}
+                      />
+                    )}
+                  </div>
+                )}
+              </>
             )}
           </div>
 

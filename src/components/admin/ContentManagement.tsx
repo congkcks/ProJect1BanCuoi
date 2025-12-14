@@ -59,7 +59,7 @@ export function ContentManagement() {
     type: "lesson" | "assessment";
     content?: LessonItem | null;
   }>({ open: false, type: "lesson" });
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; item?: LessonItem; type?: string }>({ open: false });
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; item?: any; type?: string }>({ open: false });
   const [questionDialog, setQuestionDialog] = useState<{ open: boolean; lesson?: LessonItem | null; type?: LessonContentType }>(() => ({ open: false }));
   const { toast } = useToast();
 
@@ -127,7 +127,7 @@ export function ContentManagement() {
     return types;
   };
 
-  const sumQuestions = (items?: Array<{ tongCauHoi?: number; cauHois?: { length: number }[] }>) => {
+  const sumQuestions = (items?: any[]) => {
     if (!items) return 0;
     return items.reduce((total, item) => {
       if (!item) return total;
@@ -225,7 +225,7 @@ export function ContentManagement() {
       active: "default",
       inactive: "secondary",
     };
-    
+
     const labels = {
       published: "Đã xuất bản",
       draft: "Bản nháp",
@@ -246,7 +246,7 @@ export function ContentManagement() {
       reading: FileText,
       writing: FileText,
     };
-    
+
     const Icon = icons[type as keyof typeof icons] || FileText;
     return <Icon className="h-4 w-4" />;
   };
@@ -267,7 +267,7 @@ export function ContentManagement() {
     setContentDialog({ open: true, type, content });
   };
 
-  const handleDeleteContent = (item: LessonItem, type: string) => {
+  const handleDeleteContent = (item: any, type: string) => {
     setDeleteDialog({ open: true, item, type });
   };
 
@@ -321,6 +321,7 @@ export function ContentManagement() {
       let targetLessonId = contentDialog.content?.maBai;
 
       if (contentDialog.content) {
+        console.log('[ADMIN] Updating lesson:', { targetLessonId, basePayload });
         await apiService.updateAdminLesson(targetLessonId!, basePayload);
         if (extraContents.length > 0) {
           for (const contentPayload of extraContents) {
@@ -329,7 +330,9 @@ export function ContentManagement() {
         }
         toast({ title: "Đã cập nhật", description: `Bài học "${lessonForm.tenBai}" đã được lưu.` });
       } else {
+        console.log('[ADMIN] Creating lesson with payload:', basePayload);
         const created = await apiService.createAdminLesson(basePayload);
+        console.log('[ADMIN] API Response:', created);
         const createdLesson = created?.data ?? created;
         targetLessonId = createdLesson?.maBai ?? createdLesson?.MaBai ?? targetLessonId;
         if (!targetLessonId) {
@@ -465,65 +468,65 @@ export function ContentManagement() {
                             ))}
                           </div>
                         </TableCell>
-                      <TableCell className="pr-4">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          {types.map((type) => (
-                            <span key={`${raw.maBai}-${type}`} className="inline-flex items-center gap-1 text-sm capitalize">
-                              {getTypeIcon(type)}
-                              {type}
-                            </span>
-                          ))}
-                        </div>
-                      </TableCell>
-                      <TableCell className="pr-2">
+                        <TableCell className="pr-4">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {types.map((type) => (
+                              <span key={`${raw.maBai}-${type}`} className="inline-flex items-center gap-1 text-sm capitalize">
+                                {getTypeIcon(type)}
+                                {type}
+                              </span>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell className="pr-2">
                           <Badge variant="outline">{level}</Badge>
-                      </TableCell>
+                        </TableCell>
                         <TableCell>{duration}</TableCell>
                         <TableCell>{getStatusBadge(status)}</TableCell>
                         <TableCell>{created}</TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <Eye className="mr-2 h-4 w-4" />
-                              Xem trước
-                            </DropdownMenuItem>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem>
+                                <Eye className="mr-2 h-4 w-4" />
+                                Xem trước
+                              </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => handleEditContent("lesson", raw)}>
-                              <Edit className="mr-2 h-4 w-4" />
-                              Chỉnh sửa
-                            </DropdownMenuItem>
-                            {raw.baiDocs?.length ? (
-                              <DropdownMenuItem onClick={() => handleManageQuestions(raw, "reading")}>
-                                <ListChecks className="mr-2 h-4 w-4" />
-                                Câu hỏi bài đọc
+                                <Edit className="mr-2 h-4 w-4" />
+                                Chỉnh sửa
                               </DropdownMenuItem>
-                            ) : null}
-                            {raw.baiNghes?.length ? (
-                              <DropdownMenuItem onClick={() => handleManageQuestions(raw, "listening")}>
-                                <ListChecks className="mr-2 h-4 w-4" />
-                                Câu hỏi bài nghe
-                              </DropdownMenuItem>
-                            ) : null}
+                              {raw.baiDocs?.length ? (
+                                <DropdownMenuItem onClick={() => handleManageQuestions(raw, "reading")}>
+                                  <ListChecks className="mr-2 h-4 w-4" />
+                                  Câu hỏi bài đọc
+                                </DropdownMenuItem>
+                              ) : null}
+                              {raw.baiNghes?.length ? (
+                                <DropdownMenuItem onClick={() => handleManageQuestions(raw, "listening")}>
+                                  <ListChecks className="mr-2 h-4 w-4" />
+                                  Câu hỏi bài nghe
+                                </DropdownMenuItem>
+                              ) : null}
                               <DropdownMenuItem onClick={() => handleCopyContent(raw, "bài học")}>
-                              <Copy className="mr-2 h-4 w-4" />
-                              Sao chép
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              className="text-red-600"
+                                <Copy className="mr-2 h-4 w-4" />
+                                Sao chép
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-red-600"
                                 onClick={() => handleDeleteContent(raw, "bài học")}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Xóa
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Xóa
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
                     ))}
                 </TableBody>
               </Table>
@@ -583,7 +586,7 @@ export function ContentManagement() {
                               Chỉnh sửa
                             </DropdownMenuItem>
                             <DropdownMenuItem>Thống kê</DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               className="text-red-600"
                               onClick={() => handleDeleteContent(assessment, "đề thi")}
                             >

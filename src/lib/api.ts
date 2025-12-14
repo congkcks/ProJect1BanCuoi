@@ -1,4 +1,4 @@
-import { TestListItem, TestDetail, TestSession, TestResult, TestHistoryItem } from "@/types/test";
+import { TestListItem, TestDetail, TestSession, TestResult, TestHistoryResponse } from "@/types/test";
 
 const API_BASE = "https://luyende.onrender.com/api";
 
@@ -15,11 +15,11 @@ export const testApi = {
     return response.json();
   },
 
-  async startSession(userId: number, userEmail: string, testId: string): Promise<TestSession> {
+  async startSession(userEmail: string, testId: string): Promise<TestSession> {
     const response = await fetch(`${API_BASE}/test-session/start`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, userEmail, testId }),
+      body: JSON.stringify({ userEmail, testId }),
     });
     if (!response.ok) throw new Error("Failed to start session");
     return response.json();
@@ -43,7 +43,6 @@ export const testApi = {
 
   async submitAnswers(answers: Array<{
     sessionId: string;
-    userId: number;
     questionId: number;
     selectedOption: string;
     isCorrect: boolean;
@@ -57,8 +56,8 @@ export const testApi = {
     return response.json();
   },
 
-  async getTestHistory(userId: number): Promise<TestHistoryItem[]> {
-    const response = await fetch(`${API_BASE}/test-session/history/${userId}`);
+  async getTestHistory(userEmail: string): Promise<TestHistoryResponse> {
+    const response = await fetch(`${API_BASE}/test-session/user/${encodeURIComponent(userEmail)}`);
     if (!response.ok) throw new Error("Failed to fetch test history");
     return response.json();
   },

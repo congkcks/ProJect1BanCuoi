@@ -26,6 +26,7 @@ const TopicDetail = () => {
   const [selectedCharacter, setSelectedCharacter] = useState<'John' | 'Tom' | null>(null);
   const [isListenModalOpen, setIsListenModalOpen] = useState(false);
   const [listenSentenceIndex, setListenSentenceIndex] = useState(0);
+  const [completedSentenceIndexes, setCompletedSentenceIndexes] = useState<number[]>([]);
 
   const { data: topics } = useQuery({
     queryKey: ['topics'],
@@ -187,6 +188,11 @@ const TopicDetail = () => {
       setCurrentWords(scoredWords);
       setIsRecording(false);
 
+      // Mark current sentence as completed
+      if (!completedSentenceIndexes.includes(selectedSentenceIndex)) {
+        setCompletedSentenceIndexes([...completedSentenceIndexes, selectedSentenceIndex]);
+      }
+
       toast({
         title: "Recording complete!",
         description: "Check your pronunciation above.",
@@ -329,6 +335,7 @@ const TopicDetail = () => {
               speaker={message.speaker}
               isRight={message.isRight}
               isActive={currentSentenceIndex === index}
+              isCompleted={completedSentenceIndexes.includes(index)}
             />
           ))}
         </div>
@@ -350,7 +357,7 @@ const TopicDetail = () => {
               <Button
                 onClick={handleListenAll}
                 size="lg"
-                className="bg-toeic-blue hover:bg-toeic-blue/90 text-white px-8 transition-all hover:scale-105 shadow-md"
+                className="bg-gradient-to-r from-sky-400 to-cyan-400 hover:from-sky-500 hover:to-cyan-500 text-white px-8 transition-all hover:scale-105 shadow-md"
               >
                 <Volume2 className="mr-2 h-5 w-5" />
                 Listen
@@ -358,7 +365,7 @@ const TopicDetail = () => {
               <Button
                 onClick={handleSpeak}
                 size="lg"
-                className="bg-toeic-success hover:bg-toeic-success/90 text-white px-8 transition-all hover:scale-105 shadow-md"
+                className="bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-500 hover:to-teal-500 text-white px-8 transition-all hover:scale-105 shadow-md"
               >
                 <Mic className="mr-2 h-5 w-5" />
                 Speak

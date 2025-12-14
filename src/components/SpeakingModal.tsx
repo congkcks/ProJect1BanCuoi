@@ -21,12 +21,12 @@ interface SpeakingModalProps {
   onStartRecording: () => void;
 }
 
-export const SpeakingModal = ({ 
-  open, 
-  onClose, 
+export const SpeakingModal = ({
+  open,
+  onClose,
   sentence,
   sentenceVi,
-  speaker, 
+  speaker,
   isRecording,
   words,
   onPlaySentence,
@@ -45,7 +45,7 @@ export const SpeakingModal = ({
             <X className="h-4 w-4" />
           </Button>
         </DialogHeader>
-        
+
         <div className="space-y-6 pt-2">
           {/* Current Sentence */}
           <div className="flex items-start gap-3 animate-fade-in">
@@ -82,11 +82,11 @@ export const SpeakingModal = ({
                 <span
                   key={index}
                   className={cn(
-                    "transition-all duration-300",
-                    word.status === 'correct' && "text-success font-medium",
-                    word.status === 'incorrect' && "text-destructive line-through",
-                    word.status === 'missing' && "bg-warning text-warning-foreground px-1 rounded",
-                    word.status === 'pending' && "text-foreground"
+                    "px-3 py-1.5 rounded-full font-medium transition-all duration-300",
+                    word.status === 'correct' && "bg-sky-100 text-sky-700 border border-sky-300 shadow-sm",
+                    word.status === 'incorrect' && "bg-red-100 text-red-700 line-through border border-red-300 shadow-sm",
+                    word.status === 'missing' && "bg-amber-100 text-amber-700 border border-amber-300 shadow-sm",
+                    word.status === 'pending' && "bg-gray-100 text-gray-700 border border-gray-300"
                   )}
                 >
                   {word.text}
@@ -102,15 +102,15 @@ export const SpeakingModal = ({
               disabled={isRecording}
               className={cn(
                 "w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300",
-                isRecording 
-                  ? "bg-destructive animate-pulse cursor-not-allowed scale-110" 
+                isRecording
+                  ? "bg-destructive animate-pulse cursor-not-allowed scale-110"
                   : "bg-destructive hover:bg-destructive/90 cursor-pointer hover:scale-110 shadow-lg hover:shadow-xl"
               )}
             >
               <Mic className="h-8 w-8 text-destructive-foreground" />
             </button>
             <p className="text-center text-sm text-muted-foreground">
-              {isRecording 
+              {isRecording
                 ? "Voice recognition is active..."
                 : "Click to start recording"}
             </p>

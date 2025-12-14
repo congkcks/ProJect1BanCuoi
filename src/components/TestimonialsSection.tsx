@@ -9,7 +9,7 @@ const testimonials = [
     avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b4fd?w=100&h=100&fit=crop&crop=face",
     score: "860",
     previousScore: "540",
-    content: "Từ 540 lên 860 điểm chỉ trong 3 tháng! Hệ thống AI của UTC TOEIC đã giúp tôi xác định chính xác điểm yếu và tập trung luyện tập hiệu quả. Cảm ơn đội ngũ rất nhiều!",
+    content: "Từ 540 lên 860 điểm chỉ trong 3 tháng! Hệ thống AI của UTC EngLish đã giúp tôi xác định chính xác điểm yếu và tập trung luyện tập hiệu quả. Cảm ơn đội ngũ rất nhiều!",
     rating: 5
   },
   {
@@ -18,7 +18,7 @@ const testimonials = [
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     score: "795",
     previousScore: "450",
-    content: "Là người đi làm nên thời gian học rất hạn chế. UTC TOEIC với lộ trình cá nhân hóa và luyện tập linh hoạt đã giúp tôi tối ưu thời gian và đạt mục tiêu 800+ điểm.",
+    content: "Là người đi làm nên thời gian học rất hạn chế. UTC EngLish với lộ trình cá nhân hóa và luyện tập linh hoạt đã giúp tôi tối ưu thời gian và đạt mục tiêu 800+ điểm.",
     rating: 5
   },
   {
@@ -27,7 +27,7 @@ const testimonials = [
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
     score: "920",
     previousScore: "720",
-    content: "Tôi đã thử nhiều phương pháp học TOEIC khác nhau nhưng chưa platform nào có hệ thống câu hỏi phong phú và chất lượng như UTC TOEIC. Đặc biệt là phần Listening rất xuất sắc!",
+    content: "Tôi đã thử nhiều phương pháp học TOEIC khác nhau nhưng chưa platform nào có hệ thống câu hỏi phong phú và chất lượng như UTC EngLish. Đặc biệt là phần Listening rất xuất sắc!",
     rating: 5
   },
   {
@@ -45,7 +45,7 @@ const testimonials = [
     avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=face",
     score: "745",
     previousScore: "380",
-    content: "Từ một người hoàn toàn yếu tiếng Anh, tôi không tin mình có thể đạt 745 điểm TOEIC. Cảm ơn UTC TOEIC đã giúp tôi xây dựng nền tảng vững chắc và tự tin hơn với tiếng Anh.",
+    content: "Từ một người hoàn toàn yếu tiếng Anh, tôi không tin mình có thể đạt 745 điểm TOEIC. Cảm ơn UTC EngLish đã giúp tôi xây dựng nền tảng vững chắc và tự tin hơn với tiếng Anh.",
     rating: 5
   },
   {
@@ -73,7 +73,7 @@ const TestimonialsSection = () => {
             Học viên nói gì về chúng tôi?
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Hàng nghìn học viên đã thành công với UTC TOEIC. 
+            Hàng nghìn học viên đã thành công với UTC EngLish.
             Đây là những câu chuyện truyền cảm hứng từ cộng đồng của chúng tôi.
           </p>
         </div>

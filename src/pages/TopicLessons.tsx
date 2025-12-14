@@ -22,7 +22,7 @@ const TopicLessons = () => {
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-level-b2 flex items-center justify-center">
               <Headphones className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-foreground">EnglishListen</span>
+            <span className="text-xl font-bold text-foreground">UTC EngLish</span>
           </Link>
         </div>
       </header>

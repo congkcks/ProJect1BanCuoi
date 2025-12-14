@@ -4,9 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { 
-  Calendar, 
-  Target, 
+import {
+  Calendar,
+  Target,
   Trophy,
   CheckCircle,
   ArrowRight,
@@ -56,10 +56,12 @@ const StudyRoadmap25Days = () => {
     };
     window.addEventListener('auth:token-updated', onTokenUpdate);
     window.addEventListener('auth:logged-in', onTokenUpdate);
+    window.addEventListener('progress:updated', onTokenUpdate);
     window.addEventListener('api:unauthorized', onUnauthorized as EventListener);
     return () => {
       window.removeEventListener('auth:token-updated', onTokenUpdate);
       window.removeEventListener('auth:logged-in', onTokenUpdate);
+      window.removeEventListener('progress:updated', onTokenUpdate);
       window.removeEventListener('api:unauthorized', onUnauthorized as EventListener);
     };
   }, []);
@@ -86,7 +88,7 @@ const StudyRoadmap25Days = () => {
       console.log('cookieAuth:', cookieAuth);
       console.log('isAuth:', isAuth);
 
-      
+
 
       if (isAuth) {
         // Try authenticated API first to get user-specific completion data
@@ -136,12 +138,14 @@ const StudyRoadmap25Days = () => {
       console.log('isAuth:', isAuth);
 
       // If authenticated but lessons lack completion flags, try progress API to infer completion
-      let progressMap: Record<string, boolean> = {};
+      // Separate remote vs local completions
+      let remoteProgressMap: Record<string, boolean> = {};
+      const localCompleted = new Set<string>();
       if (isAuth && !hasCompletion) {
         try {
           const td = await apiService.getAllTienDo();
           const items = Array.isArray(td?.data) ? td.data : [];
-          progressMap = items.reduce((acc: Record<string, boolean>, it: any) => {
+          remoteProgressMap = items.reduce((acc: Record<string, boolean>, it: any) => {
             const maBai = it?.maBai || it?.MaBai;
             const percent = typeof it?.phanTramHoanThanh === 'number' ? it.phanTramHoanThanh : (typeof it?.PhanTramHoanThanh === 'number' ? it.PhanTramHoanThanh : 0);
             const statusRaw = (it?.trangThai || it?.TrangThai || '').toString().toLowerCase();
@@ -157,7 +161,26 @@ const StudyRoadmap25Days = () => {
           }
         }
       }
-      const hasAnyCompletion = (isAuth && (hasCompletion || Object.keys(progressMap).length > 0)) || anyCompletedTrue;
+      // Load local instant completions (generic for non-Day1, plus per-user manual bucket for BH001)
+      const localCompletedGeneric = new Set<string>();
+      try {
+        const raw = localStorage.getItem('completedLessons');
+        const list = Array.isArray(raw ? JSON.parse(raw) : null) ? JSON.parse(raw as string) : [];
+        for (const id of list) localCompletedGeneric.add(String(id));
+      } catch { }
+      // Per-user manual completions
+      const userKey = apiService.getCurrentUserId() || 'guest';
+      const manualCompleted = new Set<string>();
+      try {
+        const rawManual = localStorage.getItem(`manualCompletedLessons:${userKey}`);
+        const listManual = Array.isArray(rawManual ? JSON.parse(rawManual) : null) ? JSON.parse(rawManual as string) : [];
+        for (const id of listManual) manualCompleted.add(String(id));
+      } catch { }
+      // Combine for non-Day1 usage only
+      for (const id of localCompletedGeneric) localCompleted.add(id);
+      for (const id of manualCompleted) localCompleted.add(id);
+
+      const hasAnyCompletion = (isAuth && (hasCompletion || Object.keys(remoteProgressMap).length > 0)) || anyCompletedTrue || localCompleted.size > 0;
       setSupportsCompletion(hasAnyCompletion);
       const roadmaps = (roadmapsRes.data || []) as LoTrinhItem[];
 
@@ -177,9 +200,31 @@ const StudyRoadmap25Days = () => {
 
         const days: DayData[] = items.map((l, i) => {
           const maBai = l.maBai;
-          const isCompleted = hasCompletion
-            ? (l as any).daHoanThanhBaiHoc === true
-            : (progressMap[maBai] === true);
+          const localDone = localCompleted.has(maBai);
+          const localManualDone = ((): boolean => {
+            try {
+              const userKey = apiService.getCurrentUserId() || 'guest';
+              const hasManualBoolean = localStorage.getItem(`bh001ManualCompleted:${userKey}`) === 'true';
+              const manualRaw = localStorage.getItem(`manualCompletedLessons:${userKey}`);
+              const manualList = Array.isArray(manualRaw ? JSON.parse(manualRaw) : null) ? JSON.parse(manualRaw as string) : [];
+              const manualSet = new Set<string>(manualList);
+              return manualSet.has(maBai) || (maBai === 'BH001' && hasManualBoolean);
+            } catch {
+              return false;
+            }
+          })();
+          // Base from API flags or remote progress
+          let isCompleted = ((l as any).daHoanThanhBaiHoc === true) || (remoteProgressMap[maBai] === true);
+          // Special rule: Day 1 (BH001) is a static intro page.
+          // Do NOT auto-complete from API or remote progress; only mark complete when user clicks the button (local storage).
+          const isDay1Static = (i === 0 || (l.soThuTu ?? 0) === 1) && /^BH001/i.test(maBai);
+          if (isDay1Static) {
+            // Only completed when there's an explicit manual completion
+            isCompleted = localManualDone; // ignore API & remote progress and generic local cache
+          } else {
+            // For other days, local completion also counts
+            isCompleted = isCompleted || localDone;
+          }
           const status: DayData['status'] = isCompleted ? 'completed' : (idx === 0 && i === 0 ? 'current' : 'locked');
           return {
             day: i + 1,
@@ -211,7 +256,7 @@ const StudyRoadmap25Days = () => {
   const getWeekTitle = (weekNum: number): string => {
     const titles = [
       'Nền tảng từ vựng',
-      'Giao tiếp thường ngày', 
+      'Giao tiếp thường ngày',
       'Kỹ năng nghe nâng cao',
       'Tổng hợp và thực hành'
     ];
@@ -400,7 +445,7 @@ const StudyRoadmap25Days = () => {
                               <Trophy className="w-3 h-3 mr-1" />
                               Hoàn thành
                             </Badge>
-                            <Button 
+                            <Button
                               size="sm"
                               variant="ghost"
                               onClick={() => handleStartLesson(day)}
@@ -411,7 +456,7 @@ const StudyRoadmap25Days = () => {
                           </div>
                         )}
                         {isAuthenticated && day.status !== "completed" && (
-                          <Button 
+                          <Button
                             size="sm"
                             onClick={() => handleStartLesson(day)}
                           >
@@ -420,7 +465,7 @@ const StudyRoadmap25Days = () => {
                           </Button>
                         )}
                         {!isAuthenticated && day.status === "current" && (
-                          <Button 
+                          <Button
                             size="sm"
                             onClick={() => handleStartLesson(day)}
                           >
@@ -446,8 +491,8 @@ const StudyRoadmap25Days = () => {
 
       {/* Action Buttons */}
       <div className="flex gap-4 justify-center">
-        <Button 
-          variant="default" 
+        <Button
+          variant="default"
           size="lg"
           onClick={() => {
             const currentDay = weeks.flatMap(w => w.days).find(d => d.status === "current");
@@ -461,8 +506,8 @@ const StudyRoadmap25Days = () => {
           <ArrowRight className="w-4 h-4 mr-2" />
           Tiếp tục học tập
         </Button>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="lg"
           onClick={() => navigate('/dashboard')}
         >

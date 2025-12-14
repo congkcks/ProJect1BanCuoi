@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  Facebook, 
-  Youtube, 
-  Instagram, 
-  Mail, 
-  Phone, 
+import {
+  Facebook,
+  Youtube,
+  Instagram,
+  Mail,
+  Phone,
   MapPin,
   Send
 } from "lucide-react";
@@ -21,10 +21,10 @@ const Footer = () => {
               <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">U</span>
               </div>
-              <span className="text-xl font-bold">UTC TOEIC</span>
+              <span className="text-xl font-bold">UTC EngLish</span>
             </div>
             <p className="text-gray-300 leading-relaxed">
-              Nền tảng học TOEIC hàng đầu Việt Nam với công nghệ AI tiên tiến, 
+              Nền tảng học TOEIC hàng đầu Việt Nam với công nghệ AI tiên tiến,
               giúp học viên đạt điểm số mục tiêu một cách hiệu quả nhất.
             </p>
             <div className="flex space-x-4">
@@ -87,8 +87,8 @@ const Footer = () => {
             <div className="pt-4">
               <h4 className="font-medium mb-3">Nhận tin tức mới nhất</h4>
               <div className="flex space-x-2">
-                <Input 
-                  placeholder="Email của bạn" 
+                <Input
+                  placeholder="Email của bạn"
                   className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
                 />
                 <Button variant="hero" size="icon">
@@ -102,7 +102,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © 2024 UTC TOEIC. Tất cả quyền được bảo lưu.
+            © 2024 UTC EngLish. Tất cả quyền được bảo lưu.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">

@@ -7,9 +7,10 @@ interface ChatMessageProps {
   speaker: string;
   isRight?: boolean;
   isActive?: boolean;
+  isCompleted?: boolean;
 }
 
-export const ChatMessage = ({ text, textVi, speaker, isRight = false, isActive = false }: ChatMessageProps) => {
+export const ChatMessage = ({ text, textVi, speaker, isRight = false, isActive = false, isCompleted = false }: ChatMessageProps) => {
   return (
     <div className={cn(
       "flex items-start gap-3 mb-6",
@@ -29,10 +30,11 @@ export const ChatMessage = ({ text, textVi, speaker, isRight = false, isActive =
       </div>
       <div className={cn(
         "rounded-2xl px-6 py-3 max-w-md transition-all duration-300 shadow-sm hover:shadow-md",
-        isRight 
-          ? "bg-muted text-foreground" 
+        isRight
+          ? "bg-muted text-foreground"
           : "bg-info text-info-foreground",
-        isActive && "ring-2 ring-warning animate-pulse"
+        isActive && "ring-2 ring-emerald-500 bg-emerald-50/50 animate-pulse",
+        isCompleted && !isActive && "ring-2 ring-green-500 bg-green-50 opacity-90"
       )}>
         <p className="text-base mb-1">{text}</p>
         {textVi && (

@@ -20,11 +20,11 @@ const LuyenTuVung = () => {
     }, {} as Record<string, typeof groups>);
 
     const typeConfig = {
-        CEFR: { title: "CEFR Levels", icon: GraduationCap, color: "text-toeic-blue", bg: "bg-toeic-blue/10" },
-        COMMON: { title: "Common Vocabulary", icon: BookOpen, color: "text-toeic-success", bg: "bg-toeic-success/10" },
-        IELTS: { title: "IELTS Preparation", icon: Target, color: "text-toeic-warning", bg: "bg-toeic-warning/10" },
-        TOEIC: { title: "TOEIC Vocabulary", icon: Target, color: "text-toeic-blue", bg: "bg-toeic-blue/10" },
-        TOPIC: { title: "Topics", icon: MessageSquare, color: "text-toeic-navy", bg: "bg-toeic-navy/5" },
+        CEFR: { title: "CEFR Levels", icon: GraduationCap, color: "text-toeic-blue", bg: "bg-gradient-to-br from-toeic-blue/10 to-transparent" },
+        COMMON: { title: "Common Vocabulary", icon: BookOpen, color: "text-toeic-success", bg: "bg-gradient-to-br from-toeic-success/10 to-transparent" },
+        IELTS: { title: "IELTS Preparation", icon: Target, color: "text-toeic-warning", bg: "bg-gradient-to-br from-toeic-warning/10 to-transparent" },
+        TOEIC: { title: "TOEIC Vocabulary", icon: Target, color: "text-toeic-navy", bg: "bg-gradient-to-br from-toeic-navy/5 to-transparent" },
+        TOPIC: { title: "Topics", icon: MessageSquare, color: "text-toeic-blue", bg: "bg-gradient-to-br from-toeic-blue/5 to-transparent" },
     };
 
     return (
@@ -47,11 +47,20 @@ const LuyenTuVung = () => {
             </div>
 
             {/* Hero Section */}
-            <div className="bg-gradient-to-r from-toeic-blue via-toeic-success to-toeic-warning py-16 px-4">
-                <div className="container mx-auto max-w-7xl">
+            <div className="bg-gradient-to-r from-toeic-blue via-toeic-blue to-toeic-success py-16 px-4 relative overflow-hidden">
+                {/* Decorative elements in hero */}
+                <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-10 right-20 w-40 h-40 bg-toeic-success rounded-full blur-2xl"></div>
+                    <div className="absolute bottom-10 left-20 w-40 h-40 bg-toeic-warning rounded-full blur-2xl"></div>
+                </div>
+                <div className="container mx-auto max-w-7xl relative z-10">
                     <div className="text-center text-white space-y-4">
+                        <div className="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
+                            <BookOpen className="w-4 h-4" />
+                            <span className="text-sm font-medium">Luyện Từ Vựng TOEIC</span>
+                        </div>
                         <h1 className="text-5xl font-bold tracking-tight">
-                            UTC TOEIC - Luyện Từ Vựng
+                            Chinh Phục Từ Vựng
                         </h1>
                         <p className="text-xl text-white/90 max-w-2xl mx-auto">
                             Học tiếng Anh với flashcards tương tác và trò chơi hấp dẫn. Bắt đầu hành trình của bạn ngay hôm nay!
@@ -84,12 +93,12 @@ const LuyenTuVung = () => {
                             const Icon = config.icon;
                             return (
                                 <section key={type}>
-                                    <div className={`flex items-center gap-3 mb-6 p-4 rounded-lg ${config.bg}`}>
-                                        <Icon className={`h-8 w-8 ${config.color}`} />
-                                        <div>
+                                    <div className={`flex items-center gap-4 mb-6 p-5 rounded-xl border border-border/50 backdrop-blur-sm ${config.bg}`}>
+                                        <Icon className={`h-8 w-8 shrink-0 ${config.color}`} />
+                                        <div className="flex-1">
                                             <h2 className="text-2xl font-bold text-toeic-navy">{config.title}</h2>
                                             <span className="text-sm text-muted-foreground">
-                                                ({typeGroups.length} {typeGroups.length === 1 ? 'set' : 'sets'})
+                                                {typeGroups.length} {typeGroups.length === 1 ? 'bộ từ vựng' : 'bộ từ vựng'}
                                             </span>
                                         </div>
                                     </div>

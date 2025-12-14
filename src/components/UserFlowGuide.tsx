@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   ArrowRight,
   PlayCircle,
   Target,
@@ -23,7 +23,7 @@ const UserFlowGuide = () => {
     {
       step: 1,
       title: "Khám phá trang chủ",
-      description: "Tìm hiểu về UTC TOEIC và các tính năng nổi bật",
+      description: "Tìm hiểu về UTC EngLish và các tính năng nổi bật",
       icon: PlayCircle,
       path: "/",
       color: "bg-blue-500",

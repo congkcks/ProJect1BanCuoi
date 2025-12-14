@@ -19,38 +19,6 @@ type FilterConfig = {
   predicate?: (lesson: LessonItem) => boolean;
 };
 
-const SKILL_KEYWORDS = {
-  writing: ['viết', 'writing', 'ngữ pháp', 'grammar', 'từ vựng', 'essay', 'bài tập viết', 'writing practice'],
-  speaking: ['giao tiếp', 'speaking', 'đàm thoại', 'conversation', 'hội thoại', 'nói chuyện', 'pronunciation', 'speaking practice'],
-} as const;
-
-const matchesSkill = (lesson: LessonItem, skill: keyof typeof SKILL_KEYWORDS): boolean => {
-  const keywords = SKILL_KEYWORDS[skill];
-  const texts: string[] = [];
-  if (lesson.tenBai) texts.push(lesson.tenBai);
-  if (lesson.moTa) texts.push(lesson.moTa);
-  lesson.videos?.forEach((video) => {
-    if (video.tieuDeVideo) texts.push(video.tieuDeVideo);
-  });
-
-  const normalized = texts.map((t) => t.toLowerCase());
-  const hasKeyword = normalized.some((text) => keywords.some((kw) => text.includes(kw)));
-
-  if (hasKeyword) return true;
-
-  if (skill === 'writing') {
-    const hasVideoOnly = (lesson.videos?.length ?? 0) > 0 && (lesson.baiDocs?.length ?? 0) === 0 && (lesson.baiNghes?.length ?? 0) === 0;
-    return hasVideoOnly;
-  }
-
-  if (skill === 'speaking') {
-    const hasConversationAssets = (lesson.videos?.length ?? 0) > 0 && (lesson.baiNghes?.length ?? 0) > 0;
-    return hasConversationAssets;
-  }
-
-  return false;
-};
-
 const FILTERS: Record<FilterKey, FilterConfig> = {
   all: {
     label: "Bắt đầu cấp độ",
@@ -73,13 +41,13 @@ const FILTERS: Record<FilterKey, FilterConfig> = {
     label: "Bài tập viết",
     description: "Ưu tiên nội dung viết/grammar",
     icon: <PenTool className="w-3.5 h-3.5" />,
-    predicate: (lesson) => matchesSkill(lesson, 'writing'),
+    predicate: (lesson) => (lesson.videos?.length ?? 0) > 0,
   },
   speaking: {
     label: "Luyện giao tiếp",
     description: "Các nội dung hội thoại/video",
     icon: <Brain className="w-3.5 h-3.5" />,
-    predicate: (lesson) => matchesSkill(lesson, 'speaking'),
+    predicate: (lesson) => (lesson.videos?.length ?? 0) > 0,
   },
 };
 
@@ -131,7 +99,7 @@ const RoadmapLessonsPage = () => {
 
   const normalizedFilter = (filterParam?.toLowerCase() as FilterKey) ?? "all";
   const activeFilter: FilterKey = FILTERS[normalizedFilter] ? normalizedFilter : "all";
-  const isFlatList = ['reading', 'listening', 'writing', 'speaking'].includes(activeFilter);
+  const isFlatList = activeFilter === 'reading' || activeFilter === 'listening';
 
   useEffect(() => {
     if (!maLoTrinh) {
@@ -166,7 +134,7 @@ const RoadmapLessonsPage = () => {
           }
 
           const payloadData = Array.isArray(payload) ? payload : (payload?.data ?? []);
-          
+
           setRoadmapMeta({
             tenLoTrinh: payload.tenLoTrinh ?? undefined,
             kyNangTrongTam: parseList(payload.kyNangTrongTam),
@@ -262,7 +230,7 @@ const RoadmapLessonsPage = () => {
             tongSoBaiHoc: payload.tongSoBaiHoc ?? (Array.isArray(payloadData) ? payloadData.length : 0),
             soBaiHoanThanh: payload.soBaiHoanThanh ?? 0
           } as any);
-          
+
           // Build status map from API daHoanThanhBaiHoc flags if authenticated
           const apiStatusMap: Record<string, 'completed' | 'current' | 'locked'> = {};
           if (isAuthenticated && Array.isArray(payloadData)) {
@@ -272,7 +240,7 @@ const RoadmapLessonsPage = () => {
               }
             });
           }
-          
+
           nextItems = (payloadData ?? []).map((it: any) => {
             const item: any = {
               maBai: it.maBai,
@@ -300,10 +268,10 @@ const RoadmapLessonsPage = () => {
           if (!isAuthenticated) {
             // No token: mark the first as current, others locked to avoid 401 spam
             const map: Record<string, 'completed' | 'current' | 'locked'> = {};
-            nextItems.forEach((it, idx) => { 
+            nextItems.forEach((it, idx) => {
               // Don't override if already set from API
               if (!it._status) {
-                map[it.maBai] = idx === 0 ? 'current' : 'locked'; 
+                map[it.maBai] = idx === 0 ? 'current' : 'locked';
               }
             });
             setStatusMap(map);
@@ -333,7 +301,7 @@ const RoadmapLessonsPage = () => {
             });
             setStatusMap(map);
           }
-        } catch {}
+        } catch { }
       } catch (err) {
         if (!ignore) {
           setError(err instanceof Error ? err.message : 'Không thể tải danh sách bài học');
@@ -358,9 +326,9 @@ const RoadmapLessonsPage = () => {
       const weekIndex = Math.floor(index / LESSONS_PER_WEEK);
       if (!chunked[weekIndex]) chunked[weekIndex] = [];
       // Use _status from lesson if available, otherwise fall back to statusMap
-      (chunked[weekIndex] as any).push({ 
-        ...lesson, 
-        _status: (lesson as any)._status ?? statusMap[lesson.maBai] 
+      (chunked[weekIndex] as any).push({
+        ...lesson,
+        _status: (lesson as any)._status ?? statusMap[lesson.maBai]
       });
     });
     return chunked;
@@ -388,11 +356,7 @@ const RoadmapLessonsPage = () => {
     <div className="max-w-screen-2xl mx-auto px-4 py-8 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
         <div className="col-span-2 space-y-2">
-          <Button
-            variant="ghost"
-            className="px-0 text-sm"
-            onClick={() => navigate('/study-plan')}
-          >
+          <Button variant="ghost" className="px-0 text-sm" onClick={() => navigate(-1)}>
             ← Quay lại Lộ trình học
           </Button>
           <h1 className="text-2xl font-bold">{roadmapMeta?.tenLoTrinh ?? `Lộ trình ${maLoTrinh}`}</h1>
@@ -476,7 +440,7 @@ const RoadmapLessonsPage = () => {
                 <Skeleton className="h-4 w-1/4" />
               </CardHeader>
               <CardContent className="space-y-3">
-                {Array.from({ length: 3 }).map((__ , row) => (
+                {Array.from({ length: 3 }).map((__, row) => (
                   <div key={row} className="flex items-center justify-between">
                     <Skeleton className="h-5 w-2/3" />
                     <Skeleton className="h-8 w-24" />
@@ -497,115 +461,84 @@ const RoadmapLessonsPage = () => {
             Không có bài học phù hợp với bộ lọc này.
           </CardContent>
         </Card>
-      ) : isFlatList ? (
-        <div className="space-y-3">
-          {filteredLessons.map((item, idx) => {
-            const status = (item as any)._status as ('completed' | 'current' | 'locked' | undefined);
-            const lessonType = getPrimarySkill(item);
-            const isCompleted = status === 'completed';
-            const icon = lessonType === 'Đọc hiểu'
-              ? <BookOpen className="w-5 h-5" />
-              : lessonType === 'Nghe'
-                ? <Headphones className="w-5 h-5" />
-                : lessonType.includes('Viết')
-                  ? <PenTool className="w-5 h-5" />
-                  : <Target className="w-5 h-5" />;
-
-            return (
-              <div
-                key={`${item.maBai}-${idx}-${activeFilter}`}
-                className={`flex flex-col gap-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-slate-200 sm:flex-row sm:items-center ${
-                  isCompleted ? 'border-green-200 bg-green-50/30' : status === 'current' ? 'border-toeic-blue/60 bg-blue-50/30' : ''
-                }`}
-              >
-                <div className="flex flex-1 items-start gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
-                    {icon}
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-base font-semibold leading-snug">{item.tenBai}</p>
-                    {item.moTa && <p className="text-sm text-muted-foreground line-clamp-2">{item.moTa}</p>}
-                    <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                      <Badge variant="secondary" className="bg-slate-100 text-slate-700">
-                        {lessonType}
-                      </Badge>
-                      {item.thoiLuongPhut && (
-                        <span className="inline-flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {item.thoiLuongPhut} phút
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2 sm:items-end">
-                  {isCompleted && <Badge className="bg-green-50 text-green-700 border-green-100 text-xs">Đã hoàn thành</Badge>}
-                  {status === 'current' ? (
-                    <Button size="sm" variant="hero" className="min-w-[150px]" onClick={() => navigate(getLessonLink(item, activeFilter))}>Bắt đầu học</Button>
-                  ) : isCompleted ? (
-                    <Button size="sm" variant="outline" className="min-w-[150px]" onClick={() => navigate(getLessonLink(item, activeFilter))}>Học lại</Button>
-                  ) : (
-                    <Button size="sm" variant="secondary" className="min-w-[150px]" disabled={status === 'locked'} onClick={() => navigate(getLessonLink(item, activeFilter))}>
-                      {status === 'locked' ? 'Đã khóa' : 'Bắt đầu học'}
-                    </Button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
-          {(weeks[currentWeek - 1] || []).map((item, idx) => {
-            const dayWithinWeek = idx + 1;
-            const dayNumber = (currentWeek - 1) * LESSONS_PER_WEEK + dayWithinWeek;
+        <div className={isFlatList ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5' : 'grid grid-cols-1 md:grid-cols-7 gap-4'}>
+          {(isFlatList ? filteredLessons : (weeks[currentWeek - 1] || [])).map((item, idx) => {
+            const dayWithinWeek = isFlatList ? ((idx % LESSONS_PER_WEEK) + 1) : (idx + 1);
+            const dayNumber = isFlatList ? (idx + 1) : ((currentWeek - 1) * LESSONS_PER_WEEK + dayWithinWeek);
             const status = (item as any)._status as ('completed' | 'current' | 'locked' | undefined);
             const lessonType = getPrimarySkill(item);
-            const isCompleted = status === 'completed';
 
+            // Color palette to match screenshot: Day1 black, subsequent alternating tones
             const dayColorClasses = [
-              'bg-[#0b0e2c] text-white',
-              'bg-[#b59aa8] text-white',
-              'bg-[#f5a623] text-white',
-              'bg-[#f37021] text-white',
-              'bg-[#f8d7a3] text-slate-800',
-              'bg-[#f4b792] text-white',
-              'bg-[#f8cf98] text-slate-800'
+              'bg-[#0b0e2c] text-white',      // Day 1 - deep navy/black
+              'bg-[#b59aa8] text-white',      // Day 2 - muted mauve
+              'bg-[#f5a623] text-white',      // Day 3 - warm amber
+              'bg-[#f37021] text-white',      // Day 4 - vivid orange
+              'bg-[#f8d7a3] text-slate-800',  // Day 5 - soft sand
+              'bg-[#f4b792] text-white',      // Day 6 - peach
+              'bg-[#f8cf98] text-slate-800'   // Day 7 - pale apricot
             ];
             const badgeColor = dayColorClasses[(dayWithinWeek - 1) % dayColorClasses.length];
 
-            const border = isCompleted
+            const border = status === 'completed'
               ? 'border-toeic-success'
               : status === 'current'
                 ? 'border-toeic-blue border-2'
                 : 'border-muted';
 
+            // Check if reading/listening item is completed
+            const isItemCompleted = isFlatList && (
+              (item.baiDocs?.[0]?.daHoanThanh) ||
+              (item.baiNghes?.[0]?.daHoanThanh)
+            );
+
             return (
-              <Card key={`${item.maBai}-${idx}-grid`} className={`relative flex flex-col transition-all hover:shadow-md min-h-[240px] ${border}`}>
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <Badge className={`${badgeColor} text-xs font-medium rounded-full px-3 py-1`}>Day {dayNumber}</Badge>
-                    {isCompleted && <CheckCircle className="w-4 h-4 text-toeic-success" />}
+              <Card key={`${item.maBai}-${item.baiDocs?.[0]?.maBaiDoc ?? 'nodoc'}-${item.baiNghes?.[0]?.maBaiNghe ?? 'noaudio'}-${idx}-${activeFilter}`} className={`relative flex flex-col transition-all hover:shadow-md min-h-[240px] ${border}`}>
+                {!isFlatList && (
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <Badge className={`${badgeColor} text-xs font-medium rounded-full px-3 py-1`}>Day {dayNumber}</Badge>
+                      {status === 'completed' && <CheckCircle className="w-4 h-4 text-toeic-success" />}
+                    </div>
+                  </CardHeader>
+                )}
+                {isFlatList && isItemCompleted && (
+                  <div className="absolute top-2 right-2">
+                    <CheckCircle className="w-5 h-5 text-toeic-success" />
                   </div>
-                </CardHeader>
+                )}
                 <CardContent className="pt-0 flex flex-col flex-1">
                   <div className="space-y-2 flex-1">
                     <div className="flex items-start space-x-2">
                       {lessonType === 'Đọc hiểu' && <BookOpen className="w-4 h-4" />}
                       {lessonType === 'Nghe' && <Headphones className="w-4 h-4" />}
                       {lessonType.includes('Viết') && <PenTool className="w-4 h-4" />}
-                      {!['Đọc hiểu','Nghe'].includes(lessonType) && !lessonType.includes('Viết') && <Target className="w-4 h-4" />}
+                      {!['Đọc hiểu', 'Nghe'].includes(lessonType) && !lessonType.includes('Viết') && <Target className="w-4 h-4" />}
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium leading-snug line-clamp-6">{item.tenBai}</p>
+                        {isFlatList && isItemCompleted && (
+                          <Badge className="mt-1 bg-green-50 text-green-700 border-green-100 text-xs">Đã hoàn thành</Badge>
+                        )}
                       </div>
                     </div>
                   </div>
-                  {status === 'current' ? (
-                    <Button size="sm" variant="hero" className="w-full mt-2 text-xs" onClick={() => navigate(getLessonLink(item, activeFilter))}>Bắt đầu học</Button>
-                  ) : isCompleted ? (
-                    <Button size="sm" variant="outline" className="w-full mt-2 text-xs" onClick={() => navigate(getLessonLink(item, activeFilter))}>Học lại</Button>
+                  {isFlatList ? (
+                    isItemCompleted ? (
+                      <Button size="sm" variant="outline" className="w-full mt-2 text-xs" onClick={() => navigate(getLessonLink(item, activeFilter))}>Học lại</Button>
+                    ) : (
+                      <Button size="sm" variant="hero" className="w-full mt-2 text-xs" onClick={() => navigate(getLessonLink(item, activeFilter))}>Bắt đầu học</Button>
+                    )
                   ) : (
-                    <Button size="sm" variant="secondary" disabled className="w-full mt-2 text-xs">Bắt đầu học</Button>
+                    <>
+                      {status === 'current' ? (
+                        <Button size="sm" variant="hero" className="w-full mt-2 text-xs" onClick={() => navigate(getLessonLink(item, activeFilter))}>Bắt đầu học</Button>
+                      ) : status === 'completed' ? (
+                        <Button size="sm" variant="outline" className="w-full mt-2 text-xs" onClick={() => navigate(getLessonLink(item, activeFilter))}>Học lại</Button>
+                      ) : (
+                        <Button size="sm" variant="secondary" className="w-full mt-2 text-xs" onClick={() => navigate(getLessonLink(item, activeFilter))}>Bắt đầu học</Button>
+                      )}
+                    </>
                   )}
                 </CardContent>
               </Card>

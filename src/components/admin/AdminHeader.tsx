@@ -16,7 +16,7 @@ export function AdminHeader() {
   const { user, logout } = useAuth();
   const displayName = ((): string => {
     if (!user || typeof user !== 'object') return 'Admin';
-    const nameKeys = ['hoTen','HoTen','fullName','name','username'];
+    const nameKeys = ['hoTen', 'HoTen', 'fullName', 'name', 'username'];
     for (const k of nameKeys) {
       const val = (user as any)[k];
       if (typeof val === 'string' && val.trim()) return val.trim();
@@ -26,7 +26,7 @@ export function AdminHeader() {
 
   const roleValue = ((): string => {
     if (!user || typeof user !== 'object') return 'Admin';
-    const roleKeys = ['vaiTro','vai_tro','role','Role','VaiTro'];
+    const roleKeys = ['vaiTro', 'vai_tro', 'role', 'Role', 'VaiTro'];
     for (const k of roleKeys) {
       const val = (user as any)[k];
       if (typeof val === 'string' && val.trim()) return val.trim();
@@ -36,8 +36,8 @@ export function AdminHeader() {
 
   const initials = ((): string => {
     const src = displayName;
-    const parts = src.split(/\s+/).filter(Boolean).slice(0,2);
-    return parts.map(p=>p[0]?.toUpperCase()).join('') || 'AD';
+    const parts = src.split(/\s+/).filter(Boolean).slice(0, 2);
+    return parts.map(p => p[0]?.toUpperCase()).join('') || 'AD';
   })();
 
   const handleProfile = () => {
@@ -52,9 +52,9 @@ export function AdminHeader() {
   return (
     <header className="border-b bg-background px-6 py-3 flex items-center justify-between">
       <div className="flex items-center gap-4">
-        <h1 className="text-xl font-semibold">UTC TOEIC Admin Dashboard</h1>
+        <h1 className="text-xl font-semibold">UTC EngLish Admin Dashboard</h1>
       </div>
-      
+
       <div className="flex items-center gap-4">
         <div className="relative w-80">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -64,7 +64,7 @@ export function AdminHeader() {
         <Button variant="ghost" size="icon">
           <Bell className="h-4 w-4" />
         </Button>
-        
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-2">

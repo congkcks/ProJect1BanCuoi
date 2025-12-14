@@ -101,7 +101,7 @@ const AuthPage = ({ initialTab }: AuthPageProps) => {
       const target = resolveRedirect(role);
       navigate(target, { replace: true });
     } catch (error: any) {
-  setLoginError(error?.message || "Đăng nhập thất bại. Vui lòng thử lại.");
+      setLoginError(error?.message || "Đăng nhập thất bại. Vui lòng thử lại.");
     } finally {
       setLoginLoading(false);
     }
@@ -128,13 +128,13 @@ const AuthPage = ({ initialTab }: AuthPageProps) => {
         email: registerEmail.trim(),
         matKhau: registerPassword.trim(),
       });
-  setRegisterSuccess("Đăng ký thành công. Bạn có thể đăng nhập ngay bây giờ.");
+      setRegisterSuccess("Đăng ký thành công. Bạn có thể đăng nhập ngay bây giờ.");
       setActiveTab("login");
       navigate("/login", { replace: true, state: location.state });
       setLoginEmail(registerEmail.trim());
       setRegisterPassword("");
     } catch (error: any) {
-  setRegisterError(error?.message || "Đăng ký thất bại. Vui lòng thử lại.");
+      setRegisterError(error?.message || "Đăng ký thất bại. Vui lòng thử lại.");
     } finally {
       setRegisterLoading(false);
     }
@@ -149,7 +149,7 @@ const AuthPage = ({ initialTab }: AuthPageProps) => {
               <BookOpen className="h-8 w-8" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-toeic-navy">UTC TOEIC</h1>
+              <h1 className="text-3xl font-bold text-toeic-navy">UTC EngLish</h1>
               <p className="text-sm text-muted-foreground">Nền tảng học TOEIC thông minh</p>
             </div>
           </div>

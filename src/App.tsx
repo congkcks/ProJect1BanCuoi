@@ -51,6 +51,8 @@ import TopicDetail from "./pages/TopicDetail";
 import LuyenTuVung from "./pages/LuyenTuVung";
 import { GroupCard } from "./components/GroupCard";
 import GroupDetail from "./pages/GroupDetail";
+import WritingPractice from "./pages/WritingPractice";
+import SavedConversations from "./pages/SavedConversations";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -72,6 +74,7 @@ const App = () => (
             <Route path="/test-exam/:testId" element={<TestExam />} />
             <Route path="/create-lesson" element={<CreateLesson />} />
             <Route path="/topicspeaker" element={<Topics />} />
+            <Route path="/saved-conversations" element={<SavedConversations />} />
 
             {/* Đặt route chi tiết lên trước */}
             <Route path="/topicspeaker/:id" element={<TopicDetail />} />
@@ -85,6 +88,7 @@ const App = () => (
             <Route path="/history" element={<History />} />
             <Route path="/luyentu" element={<LuyenTuVung />} />
             <Route path="/group/:groupId" element={<GroupDetail />} />
+            <Route path="/writing-practice" element={<WritingPractice />} />
 
 
             <Route

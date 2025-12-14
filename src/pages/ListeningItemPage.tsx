@@ -109,7 +109,7 @@ const ListeningItemPage = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`http://localhost:5153/api/BaiNghe/submit/${maBaiNghe}`, {
+      const response = await fetch(`https://beprojetc1.onrender.com/api/BaiNghe/submit/${maBaiNghe}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -173,173 +173,172 @@ const ListeningItemPage = () => {
       )}
 
       {!loading && !error && data && (
-      <>
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold flex items-center gap-2"><Headphones className="w-6 h-6"/>{data.tieuDe}</h1>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Badge variant="outline">{data.doKho || 'Mức độ'}</Badge>
-          <span>{createdAt ?? 'Không rõ ngày tạo'}</span>
-        </div>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Nghe</CardTitle>
-          <CardDescription>Phát audio hoặc mở liên kết nguồn</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {directAudio && audioUrl && (
-            <audio controls className="w-full">
-              <source src={audioUrl} />
-            </audio>
-          )}
-          {!directAudio && ytId && (
-            <div className="aspect-video w-full overflow-hidden rounded-lg border">
-              <iframe
-                className="w-full h-full"
-                src={`https://www.youtube.com/embed/${ytId}`}
-                title="YouTube audio"
-                frameBorder={0}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
+        <>
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold flex items-center gap-2"><Headphones className="w-6 h-6" />{data.tieuDe}</h1>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Badge variant="outline">{data.doKho || 'Mức độ'}</Badge>
+              <span>{createdAt ?? 'Không rõ ngày tạo'}</span>
             </div>
-          )}
-          {!directAudio && !ytId && audioUrl && (
-            <Button asChild>
-              <a href={audioUrl} target="_blank" rel="noreferrer">
-                Mở trang nghe <ExternalLink className="w-4 h-4 ml-2"/>
-              </a>
-            </Button>
-          )}
-
-          {data.banGhiAm && (
-            <div className="p-4 rounded border bg-background">
-              <div className="text-sm text-muted-foreground mb-1">Bản ghi âm (Transcript)</div>
-              <pre className="whitespace-pre-wrap text-sm">{data.banGhiAm}</pre>
-            </div>
-          )}
-
-          <div className="pt-2">
-            <button
-              className="text-xs text-muted-foreground underline"
-              onClick={() => setShowRaw(v => !v)}
-            >
-              {showRaw ? 'Ẩn JSON thô' : 'Xem JSON thô (debug)'}
-            </button>
-            {showRaw && (
-              <pre className="mt-2 p-3 rounded border bg-muted/30 text-xs overflow-auto max-h-64">
-                {JSON.stringify(data, null, 2)}
-              </pre>
-            )}
           </div>
-        </CardContent>
-      </Card>
 
-      {Array.isArray(data.cauHois) && data.cauHois.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main questions area */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Câu hỏi</CardTitle>
-                <CardDescription>
-                  Tổng {data.tongCauHoi ?? data.cauHois.length} câu. Chọn đáp án đúng cho mỗi câu.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {data.cauHois
-                  .slice()
-                  .sort((a,b)=>a.thuTuHienThi-b.thuTuHienThi)
-                  .map((q: CauHoiItem) => (
-                  <div key={q.maCauHoi} className="p-4 border rounded-lg space-y-3">
-                    <div className="font-medium">{q.thuTuHienThi}. {q.noiDungCauHoi}</div>
-                    <div className="grid sm:grid-cols-2 gap-2">
-                      {q.dapAns.slice().sort((a,b)=>a.thuTuHienThi-b.thuTuHienThi).map((a) => {
-                        const selected = answers[q.maCauHoi]?.nhanDapAn === a.nhanDapAn;
-                        const isCorrect = submitted && a.laDapAnDung;
-                        const isWrong = submitted && selected && !a.laDapAnDung;
+          <Card>
+            <CardHeader>
+              <CardTitle>Nghe</CardTitle>
+              <CardDescription>Phát audio hoặc mở liên kết nguồn</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {directAudio && audioUrl && (
+                <audio controls className="w-full">
+                  <source src={audioUrl} />
+                </audio>
+              )}
+              {!directAudio && ytId && (
+                <div className="aspect-video w-full overflow-hidden rounded-lg border">
+                  <iframe
+                    className="w-full h-full"
+                    src={`https://www.youtube.com/embed/${ytId}`}
+                    title="YouTube audio"
+                    frameBorder={0}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              )}
+              {!directAudio && !ytId && audioUrl && (
+                <Button asChild>
+                  <a href={audioUrl} target="_blank" rel="noreferrer">
+                    Mở trang nghe <ExternalLink className="w-4 h-4 ml-2" />
+                  </a>
+                </Button>
+              )}
+
+              {data.banGhiAm && (
+                <div className="p-4 rounded border bg-background">
+                  <div className="text-sm text-muted-foreground mb-1">Bản ghi âm (Transcript)</div>
+                  <pre className="whitespace-pre-wrap text-sm">{data.banGhiAm}</pre>
+                </div>
+              )}
+
+              <div className="pt-2">
+                <button
+                  className="text-xs text-muted-foreground underline"
+                  onClick={() => setShowRaw(v => !v)}
+                >
+                  {showRaw ? 'Ẩn JSON thô' : 'Xem JSON thô (debug)'}
+                </button>
+                {showRaw && (
+                  <pre className="mt-2 p-3 rounded border bg-muted/30 text-xs overflow-auto max-h-64">
+                    {JSON.stringify(data, null, 2)}
+                  </pre>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {Array.isArray(data.cauHois) && data.cauHois.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Main questions area */}
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Câu hỏi</CardTitle>
+                    <CardDescription>
+                      Tổng {data.tongCauHoi ?? data.cauHois.length} câu. Chọn đáp án đúng cho mỗi câu.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {data.cauHois
+                      .slice()
+                      .sort((a, b) => a.thuTuHienThi - b.thuTuHienThi)
+                      .map((q: CauHoiItem) => (
+                        <div key={q.maCauHoi} className="p-4 border rounded-lg space-y-3">
+                          <div className="font-medium">{q.thuTuHienThi}. {q.noiDungCauHoi}</div>
+                          <div className="grid sm:grid-cols-2 gap-2">
+                            {q.dapAns.slice().sort((a, b) => a.thuTuHienThi - b.thuTuHienThi).map((a) => {
+                              const selected = answers[q.maCauHoi]?.nhanDapAn === a.nhanDapAn;
+                              const isCorrect = submitted && a.laDapAnDung;
+                              const isWrong = submitted && selected && !a.laDapAnDung;
+                              return (
+                                <button
+                                  key={a.maDapAn}
+                                  className={`text-left p-3 rounded border transition ${selected ? 'border-blue-500' : ''} ${isCorrect ? 'bg-green-50 border-green-400' : ''} ${isWrong ? 'bg-red-50 border-red-400' : ''}`}
+                                  onClick={() => !submitted && onSelect(q.maCauHoi, a.nhanDapAn, a.maDapAn)}
+                                >
+                                  <span className="font-medium mr-2">{a.nhanDapAn}.</span>{a.noiDungDapAn}
+                                </button>
+                              );
+                            })}
+                          </div>
+                          {submitted && q.giaiThich && (
+                            <div className="text-sm text-muted-foreground">Giải thích: {q.giaiThich}</div>
+                          )}
+                        </div>
+                      ))}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Questions list sidebar */}
+              <div className="lg:col-span-1">
+                <Card className="sticky top-6">
+                  <CardHeader>
+                    <CardTitle className="text-base">Danh sách câu hỏi ({data.cauHois.length})</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {data.cauHois.map((q, idx) => {
+                        const isAnswered = answers[q.maCauHoi] !== undefined;
                         return (
                           <button
-                            key={a.maDapAn}
-                            className={`text-left p-3 rounded border transition ${selected ? 'border-blue-500' : ''} ${isCorrect ? 'bg-green-50 border-green-400' : ''} ${isWrong ? 'bg-red-50 border-red-400' : ''}`}
-                            onClick={() => !submitted && onSelect(q.maCauHoi, a.nhanDapAn, a.maDapAn)}
+                            key={q.maCauHoi}
+                            onClick={() => {
+                              const elem = document.getElementById(`question-${q.maCauHoi}`);
+                              elem?.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition ${isAnswered ? 'bg-green-100 text-green-900 ring-2 ring-green-500' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                              }`}
                           >
-                            <span className="font-medium mr-2">{a.nhanDapAn}.</span>{a.noiDungDapAn}
+                            <div className="flex items-center justify-between">
+                              <span>Câu {q.thuTuHienThi}</span>
+                              {isAnswered && <span className="text-xs bg-green-600 text-white px-2 py-0.5 rounded">✓</span>}
+                            </div>
                           </button>
                         );
                       })}
                     </div>
-                    {submitted && q.giaiThich && (
-                      <div className="text-sm text-muted-foreground">Giải thích: {q.giaiThich}</div>
-                    )}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Questions list sidebar */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-6">
-              <CardHeader>
-                <CardTitle className="text-base">Danh sách câu hỏi ({data.cauHois.length})</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {data.cauHois.map((q, idx) => {
-                    const isAnswered = answers[q.maCauHoi] !== undefined;
-                    return (
-                      <button
-                        key={q.maCauHoi}
+                    <Button
+                      onClick={handleSubmitQuiz}
+                      className="w-full mt-4 rounded-full bg-green-600 hover:bg-green-700"
+                      disabled={isSubmitting || submitted}
+                    >
+                      {isSubmitting ? "Đang nộp..." : submitted ? "Đã nộp" : "Nộp bài"}
+                    </Button>
+                    {submitted && (
+                      <Button
+                        variant="outline"
+                        className="w-full mt-2"
                         onClick={() => {
-                          const elem = document.getElementById(`question-${q.maCauHoi}`);
-                          elem?.scrollIntoView({ behavior: 'smooth' });
+                          setSubmitted(false);
+                          setAnswers({});
                         }}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition ${
-                          isAnswered ? 'bg-green-100 text-green-900 ring-2 ring-green-500' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                        }`}
                       >
-                        <div className="flex items-center justify-between">
-                          <span>Câu {q.thuTuHienThi}</span>
-                          {isAnswered && <span className="text-xs bg-green-600 text-white px-2 py-0.5 rounded">✓</span>}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-                <Button 
-                  onClick={handleSubmitQuiz} 
-                  className="w-full mt-4 rounded-full bg-green-600 hover:bg-green-700" 
-                  disabled={isSubmitting || submitted}
-                >
-                  {isSubmitting ? "Đang nộp..." : submitted ? "Đã nộp" : "Nộp bài"}
-                </Button>
-                {submitted && (
-                  <Button 
-                    variant="outline"
-                    className="w-full mt-2"
-                    onClick={() => { 
-                      setSubmitted(false); 
-                      setAnswers({}); 
-                    }}
-                  >
-                    Làm lại
-                  </Button>
-                )}
-              </CardContent>
+                        Làm lại
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Chưa có câu hỏi</CardTitle>
+                <CardDescription>Bài nghe này hiện chưa có câu hỏi trắc nghiệm.</CardDescription>
+              </CardHeader>
             </Card>
-          </div>
-        </div>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Chưa có câu hỏi</CardTitle>
-            <CardDescription>Bài nghe này hiện chưa có câu hỏi trắc nghiệm.</CardDescription>
-          </CardHeader>
-        </Card>
-      )}
-      </>
+          )}
+        </>
       )}
     </div>
   );

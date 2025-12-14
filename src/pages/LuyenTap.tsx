@@ -97,22 +97,6 @@ const LuyenTap = () => {
             iconBg: "bg-white/20"
         },
         {
-            title: "Luyện Đọc",
-            description: "Đọc hiểu với các bài đọc đa dạng, từ vựng được highlight",
-            icon: <BookText className="w-7 h-7 text-white" />,
-            path: "/reading-config",
-            gradient: "bg-gradient-to-br from-amber-500 to-orange-600",
-            iconBg: "bg-white/20"
-        },
-        {
-            title: "Đề Thi TOEIC",
-            description: "Luyện đề TOEIC thực tế với đầy đủ các phần thi",
-            icon: <ClipboardList className="w-7 h-7 text-white" />,
-            path: "/toeic-tests",
-            gradient: "bg-gradient-to-br from-violet-500 to-purple-600",
-            iconBg: "bg-white/20"
-        },
-        {
             title: "Từ Vựng",
             description: "Flashcard thông minh, học từ vựng hiệu quả với spaced repetition",
             icon: <BookMarked className="w-7 h-7 text-white" />,
@@ -131,14 +115,6 @@ const LuyenTap = () => {
             iconBg: "bg-white/20"
         },
         {
-            title: "Ngữ Pháp",
-            description: "Bài tập ngữ pháp tương tác, giải thích chi tiết từng lỗi sai",
-            icon: <BookOpen className="w-7 h-7 text-white" />,
-            path: "/grammar-practice",
-            gradient: "bg-gradient-to-br from-lime-500 to-green-600",
-            iconBg: "bg-white/20"
-        },
-        {
             title: "Luyện Đề",
             description: "Bộ đề tổng hợp giúp ôn luyện toàn diện các kỹ năng",
             icon: <TrendingUp className="w-7 h-7 text-white" />,
@@ -146,6 +122,15 @@ const LuyenTap = () => {
             gradient: "bg-gradient-to-br from-slate-600 to-slate-800",
             iconBg: "bg-white/20"
         },
+        {
+            title: "Luyện Viết Hội Thoại",
+            description: "Luyện viết hội thoại theo chủ đề với sự hỗ trợ của AI",
+            icon: <BookText className="w-7 h-7 text-white" />,
+            path: "/saved-conversations",
+            external: false,
+            gradient: "bg-gradient-to-br from-yellow-500 to-orange-600",
+            iconBg: "bg-white/20"
+        }
     ];
 
     const highlights = [
@@ -198,7 +183,7 @@ const LuyenTap = () => {
 
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                             Chinh phục tiếng Anh cùng{" "}
-                            <span className="bg-gradient-to-r from-primary via-info to-purple bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r from-toeic-blue via-cyan-500 to-toeic-success bg-clip-text text-transparent font-black drop-shadow-lg">
                                 UTC-EngLish
                             </span>
                         </h1>

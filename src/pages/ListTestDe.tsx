@@ -127,7 +127,7 @@ const ListTestDe = () => {
             {/* Footer */}
             <footer className="border-t border-border/50 mt-20 bg-card/30 backdrop-blur-sm relative z-10">
                 <div className="container mx-auto px-4 py-8 text-center text-sm text-muted-foreground">
-                    <p>&copy; 2024 UTC TOEIC. Practice makes perfect.</p>
+                    <p>&copy; 2024 UTC EngLish. Practice makes perfect.</p>
                 </div>
             </footer>
         </div>

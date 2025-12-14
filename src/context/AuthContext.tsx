@@ -149,6 +149,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, [clearSession]);
 
+  // Lưu userEmail vào localStorage khi user thay đổi
+  useEffect(() => {
+    if (user?.email) {
+      localStorage.setItem('userEmail', user.email);
+    }
+  }, [user]);
+
   const login = useCallback(async (email: string, password: string) => {
     setLoading(true);
     try {
@@ -161,7 +168,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         const payload = decodeJwtPayload(cleaned);
         if (payload) console.debug('[Auth] JWT payload', payload);
-      } catch {}
+      } catch { }
       // Immediately fetch canonical profile from backend (non-blocking)
       const fetched = await refreshProfile({ suppressUnauthorized: true });
       const nextUser = fetched ?? response.user ?? (() => {
@@ -182,6 +189,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = useCallback(() => {
     clearSession();
+    localStorage.removeItem('userEmail');
   }, [clearSession]);
 
   const changePassword = useCallback(

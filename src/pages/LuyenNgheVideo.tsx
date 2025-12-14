@@ -119,7 +119,7 @@ const LuyenNgheVideo = () => {
                             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-level-b2 flex items-center justify-center">
                                 <Headphones className="h-5 w-5 text-white" />
                             </div>
-                            <span className="text-lg font-bold text-foreground">EnglishListen</span>
+                            <span className="text-lg font-bold text-foreground">UTC EngLish</span>
                         </div>
                         <p className="text-sm text-muted-foreground">
                             Cải thiện kỹ năng phát âm và nói tiếng Anh của bạn với phương pháp shadowing
@@ -155,7 +155,7 @@ const LuyenNgheVideo = () => {
                 </div>
                 <div className="border-t border-border mt-8 pt-8 text-center">
                     <p className="text-sm text-muted-foreground">
-                        © 2025 EnglishListen. All rights reserved.
+                        © 2025 UTC EngLish. All rights reserved.
                     </p>
                 </div>
             </div>
